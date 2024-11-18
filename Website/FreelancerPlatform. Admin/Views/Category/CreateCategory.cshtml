@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewData["Title"] = "CreateCategory";
+}
+
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Thêm lĩnh vực</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 style="margin: 0;">Thêm lĩnh vực</h5>
+        </div>
+        <div class="card-body">
+            <form id="create-admin-form">
+                <!-- Thêm ID cho form -->
+                <div class="mb-3">
+                    <label for="category-name" class="form-label">Tên lĩnh vực</label>
+                    <input type="text" id="category-name" name="category-name" class="form-control" placeholder="Nhập tên lĩnh vực" />
+                </div>
+                <div class="mb-3">
+                    <label for="image-category" class="form-label">Ảnh</label>
+                    <input type="file" id="image-category" name="image-category" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" id="btn-create-category" class="btn btn-primary">Tạo lĩnh vực</button>
+                    <a href="/linh-vuc" class="btn btn-secondary">Quay lại</a> <!-- Thay đổi đường dẫn nếu cần -->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '#btn-create-category', function (e) {
+                e.preventDefault();
+
+                const newName = $('#category-name').val();
+                const newImageUrl = $('#image-category')[0].files[0];
+
+                const formData = new FormData();
+                formData.append('name', newName);
+                formData.append('imageUrl', newImageUrl);
+
+                $.ajax({
+                    type: "POST",
+                    url: '/category/createcategory',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        window.location.replace('/linh-vuc');
+                    },
+                    error: function (err) {
+                        const errors = err.responseJSON.errors;
+                        if (errors) {
+                            const error = errors[0];
+                            const messages = error.errors;
+                            if (messages && messages.length > 1) {
+                                showError(messages[1]);
+                            } else if (messages) {
+                                showError(messages[0]);
+                            } else {
+                                showError('Đã xảy ra lỗi không xác định.');
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

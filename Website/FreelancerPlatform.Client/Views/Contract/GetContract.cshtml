@@ -1,0 +1,694 @@
+﻿@using FreelancerPlatform.Application.Extendsions
+@model FreelancerPlatform.Application.Dtos.Contract.ContractViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết hợp đồng";
+}
+
+<input id="contract-id" value="@Model.Id" type="hidden" />
+<input id="recruiter-id" value="@ViewBag.Recruiter.Id" type="hidden" />
+<input id="partner-name" value=@($"{Model.PartnerLastName} {Model.PartnerFirstName}") type="hidden" />
+<input id="contract-name" value="@Model.Name" type="hidden" />
+<input id="partner-id" value="@Model.PartnerId" type="hidden" />
+<div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+
+    <div style="display: flex;">
+
+        <!-- Freelancer List Section -->
+        <div style="width: 75%; padding: 20px;" id="freelancer-list">
+            <div class="profile-header" style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div class="profile-info" style="flex-grow: 1;">
+                    <!-- Tên công việc -->
+                    <h1 style="font-size: 24px; margin: 0;">
+                        @Model.Name
+                        <span id="container-status-job">
+                            <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                @Model.CreateDay.ToString("dd/MM/yyyy")
+                            </span>
+                        </span>
+                    </h1>
+                    <p style="margin: 5px 0;"><strong>Mã hợp đồng:</strong> @Model.Id</p>
+                    <!-- Lĩnh vực công việc -->
+                    <p style="margin: 5px 0;"><strong>Người thuê:</strong> <a href="~/chi-tiet-freelancer/@ViewBag.Recruiter.Id">@Model.RecruiterLastName @Model.RecruiterFirstName</a></p>
+
+                    <!-- Mức lương công việc -->
+                    <p style="margin: 5px 0;"><strong>Người làm việc:</strong> <a href="~/chi-tiet-freelancer/@ViewBag.Freelancer.Id">@Model.PartnerLastName @Model.PartnerFirstName</a></p>
+
+                    <!-- Loại hình công việc -->
+                    @{
+                        if (User.GetUserId() == Model.PartnerId)
+                        {
+                                <p id="title-contract-status" style="margin: 5px 0;"><strong>Trạng thái hợp đồng:</strong>  @(Model.ContractStatus == true && (Model.AcceptStatus == 2 || Model.AcceptStatus == 0) ? "Đang diễn ra" : "Đã kết thúc")</p>
+                        }
+                    }
+
+                </div>
+
+                <!-- Icons section -->
+                @{
+                    if (Model.RecruiterId == User.GetUserId())
+                    {
+                        if(Model.AcceptStatus == 0)
+                        {
+                                            <p>Chưa có phản hồi từ đối tác</p>
+                        }
+                        else if(Model.AcceptStatus == 1)
+                        {
+                                            <p>Đối tác đã từ chối</p>
+                        }
+                        else
+                        {
+                                            <div class="icons" style="margin-left: auto; display: flex; align-items: flex-start; padding-top: 5px;">
+                                               <div id="container-contract-status">
+                                                    @{
+                                                if (Model.ContractStatus == true)
+                                                {
+                                                                    <select id="contract-status" style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+
+                                                                        <option value="1" selected="@(Model.ContractStatus == true ? true : false)">Hợp đồng đang diễn ra</option>
+                                                                        <option value="2" selected="@(Model.ContractStatus == false ? true : false)">Kết thúc hợp đồng</option>
+                                                                    </select>
+                                                }
+                                                else
+                                                {
+                                                                    <select disabled style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+
+                                                                        <option>Hợp đồng đã kết thúc</option>
+                                                                    </select>
+                                                }
+                                                    }
+                                               </div>
+                                               
+                                    @{
+                                    if (Model.ContractStatus)
+                                    {
+                                                <button id="btn-edit-contract" style="background: none; border: none; cursor: pointer;" title="Cập nhật hợp đồng">
+                                                    <i class="fa fa-pen" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                                </button>
+                                    }
+                                    }
+                                            </div>
+                        }
+                    }
+                    else
+                    {
+                                        <div id="container-accept-status" style="display: flex; justify-content: flex-end; margin-bottom: 5px; margin-right: 22px;">
+                                            @{
+                                if (Model.AcceptStatus == 0)
+                                {
+                                                                    <select id="accept-status" style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+                                                                        <option value="">--Trạng thái đồng ý--</option>
+                                                                        <option value="1">Từ chối</option>
+                                                                        <option value="2">Đồng ý</option>
+                                                                    </select>
+                                }
+                                else
+                                {
+                                                                    <select disabled style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+                                                                        <option value="">--Trạng thái đồng ý--</option>
+                                                                        <option selected="@(Model.AcceptStatus == 1 ? true : false)" value="1">Từ chối</option>
+                                                                        <option selected="@(Model.AcceptStatus == 2 ? true : false)" value="2">Đồng ý</option>
+                                                                    </select>
+                                }
+                                            }    
+                                               
+                                        </div>
+
+                     
+                    }
+                }
+            </div>
+
+            <div class="skills-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Nội dung</h2>
+                <p> @Model.Content</p>
+
+            </div>
+
+            <hr />
+
+
+           <div id="container-review">
+                @{
+                    if (Model.RecruiterId == User.GetUserId() && Model.ContractStatus == false)
+                    {
+                        if (Model.PartnerPoint == 0)
+                        {
+                            <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá đối tác</h2>
+
+                                <!-- Chọn số sao -->
+                                <div style="margin-bottom: 10px;">
+                                    <div id="star-rating" style="font-size: 30px;">
+                                        <span class="star" data-value="1" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                        <span class="star" data-value="2" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                        <span class="star" data-value="3" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                        <span class="star" data-value="4" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                        <span class="star" data-value="5" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                    </div>
+                                </div>
+
+                                <!-- Nội dung đánh giá -->
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-weight: bold;">Nội dung đánh giá:</label>
+                                    <textarea id="review-content" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập nội dung đánh giá"></textarea>
+                                </div>
+
+                                <!-- Nút Thực hiện đánh giá -->
+                                <button id="btn-submit-review" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Thực hiện đánh giá</button>
+                            </div>
+                            <hr />
+                        }
+                        else
+                        {
+                            <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá</h2>
+
+                                <!-- Chọn số sao -->
+                                <div style="margin-bottom: 10px;">
+                                    <div id="star-rating" style="font-size: 30px;">
+                                        @{
+                                            var starValue = 0;
+                                            for(var s = 1; s <= Model.PartnerPoint; s++)
+                                            {
+                                                starValue++;
+                                                <span class="star" data-value="@starValue" style="cursor: pointer; color: #FFC107">&#9733;</span>
+                                            }
+                                            for (var us = 1; us <= (5 - Model.PartnerPoint); us++)
+                                            {
+                                                starValue++;
+                                                <span class="star" data-value="@starValue" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Nội dung đánh giá -->
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-weight: bold;">Nội dung đánh giá:</label>
+                                    <textarea id="review-content" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập nội dung đánh giá">@Model.PartnerReview</textarea>
+                                </div>
+
+                                <!-- Nút Thực hiện đánh giá -->
+                                <button id="btn-submit-review" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Cập nhật đánh giá</button>
+                            </div>
+                            <hr />
+                        }
+                    }
+                    else if (Model.PartnerId == User.GetUserId() && Model.ContractStatus == false)
+                    {
+                        if (Model.PartnerPoint > 0)
+                        {
+                            <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá người thuê về bạn</h2>
+
+                                <!-- Chọn số sao -->
+                                <div style="margin-bottom: 10px;">
+                                    <div id="star-rating" style="font-size: 30px;">
+                                        @{
+                                            var starValue = 0;
+                                            for (var s = 1; s <= Model.PartnerPoint; s++)
+                                            {
+                                                starValue++;
+                                                <span class="star" data-value="@starValue" style="cursor: pointer; color: #FFC107">&#9733;</span>
+                                            }
+                                            for (var us = 1; us <= (5 - Model.PartnerPoint); us++)
+                                            {
+                                                starValue++;
+                                                <span class="star" data-value="@starValue" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Nội dung đánh giá -->
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-weight: bold;">Nội dung đánh giá:</label>
+                                    <p>@Model.PartnerReview</p>
+                                </div>
+                            </div>
+                            <hr />
+                        }
+                    }
+                }
+           </div>
+
+            
+
+            <div class="reviews-section" style="margin-bottom: 20px;">
+                @{
+                    if (Model.RecruiterId == User.GetUserId())
+                    {
+                        // Nút "Thêm giao dịch"
+                        <button id="btn-add-transaction" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer; margin-bottom: 10px;">
+                            Thêm giao dịch
+                        </button>
+
+                        <form id="form-transaction" class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;" asp-action="CreateTransaction" asp-controller="Transaction" method="post">
+                            <h2 style="font-size: 22px; margin-bottom: 10px;">Thông tin giao dịch</h2>
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-weight: bold;">Nội dung:</label>
+                                <textarea placeholder="Nhập nội dung giao dịch" id="Description" name="Description" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;"></textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-weight: bold;">Số tiền:</label>
+                                <input type="number" id="Amount" name="Amount" placeholder="Nhập số tiền" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" />
+                            </div>
+                            <input type="hidden" name="ContractId" id="ContractId" value="@Model.Id" />
+                            <button type="submit" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Thực hiện giao dịch</button>
+                        </form>
+                    }
+                }
+            </div>
+
+            @{
+                if (ViewBag.Transaction.Count > 0)
+                {
+                    <div class="reviews-section" style="margin-bottom: 20px;">
+
+                        <h2 style="font-size: 22px; margin-bottom: 10px;">Danh sách giao dịch</h2>
+                        <ul id="apply-list" class="reviews-list" style="list-style-type: none; padding: 0;">
+                            @{
+                                foreach(var i in ViewBag.Transaction)
+                                {
+                                    <li id="li-apply-@i.Id" class="review-item" style="margin-bottom: 20px;">
+                                        <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                            <img src="@((i.ImageUrl != null && i.ImageUrl != "") ? $"/Image/{i.ImageUrl}" : "/images/default-avatar.jpg")" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                            <div class="review-info">
+                                                <h3 class="review-username" style="font-size: 18px; margin: 0;">
+                                                    @i.LastName @i.FirstName
+                                                </h3>
+                                                <p class="review-date" style="font-size: 14px; color: gray;">
+                                                    @i.CreateDay.ToString("dd/MM/yyyy")
+                                                    <span style="font-size: 12px; color: #0078D4; margin-left: 5px;">@(i.Status ? "Admin đã xử lý" : "Đang chờ admin xử lý")</span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="review-extra-info" style="font-size: 16px; margin-top: 10px;">
+                                            <div class="review-bottom" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                                <p class="review-days" style="margin: 0;"><strong>Số tiền thanh toán:</strong> @i.Amount.ToString("N0")đ</p>
+                                            </div>
+                                            <p class="review-content" style="font-size: 16px; line-height: 1.5;">@i.Content</p>
+                                        </div>
+                                    </li>
+                                    <hr style="border: 0; border-top: 1px solid #ddd;">
+
+
+
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+
+        <div style="width: 30%; padding: 20px; border-left: 1px solid #ddd;">
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Xác thực người thuê</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Recruiter.PaymentVerification == true)
+                            {
+                                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                                <strong><i class="fas fa-credit-card" style="color: green"></i> Thanh toán:</strong>
+                                                <span style="color: green;">Đã xác thực</span>
+                            }
+                            else
+                            {
+                                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                                <strong><i class="fas fa-credit-card" style="color: black"></i> Thanh toán:</strong>
+                                                <span style="color: black;">Đã xác thực</span>
+                            }
+                        }
+
+                    </li>
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Recruiter.About == null || ViewBag.Freelancer.Categories.Count == 0 || ViewBag.Freelancer.Skills.Count == 0)
+                            {
+                                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                                <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: green;">Chưa xác thực</span>
+                            }
+                            else
+                            {
+                                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                                <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                            }
+                        }
+
+                    </li>
+                    <li style="margin: 5px 0;">
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                        <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Xác thực người làm</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Freelancer.PaymentVerification == true)
+                            {
+                                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                                <strong><i class="fas fa-credit-card" style="color: green"></i> Thanh toán:</strong>
+                                                <span style="color: green;">Đã xác thực</span>
+                            }
+                            else
+                            {
+                                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                                <strong><i class="fas fa-credit-card" style="color: black"></i> Thanh toán:</strong>
+                                                <span style="color: black;">Đã xác thực</span>
+                            }
+                        }
+
+                    </li>
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Freelancer.About == null || ViewBag.Freelancer.Categories.Count == 0 || ViewBag.Freelancer.Skills.Count == 0)
+                            {
+                                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                                <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: green;">Chưa xác thực</span>
+                            }
+                            else
+                            {
+                                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                                <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                            }
+                        }
+
+                    </li>
+                    <li style="margin: 5px 0;">
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                        <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section script{
+    <script>
+        const connectionInGetContract = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+        connectionInGetContract.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        $('#Amount').on('input', function () {
+            formatCurrency(this);
+        });
+        $('#form-transaction').hide();
+        $('body').on('click', '#btn-add-transaction', function () {
+            $('#form-transaction').show();
+            $('#btn-add-transaction').hide();
+        });
+
+        $('#accept-status').on('change', function () {
+            var newContractId = $('#contract-id').val();
+            var newStatus = $('#accept-status').val();
+
+            var contractName = $('#contract-name').val();
+            var partnerName = $('#partner-name').val();
+            var recruiterId = $('#recruiter-id').val();
+            $.ajax({
+                url: '/Contract/UpdateContractAcceptStatus',
+                type: 'POST',
+                data: {
+                    contractId: newContractId,
+                    status: newStatus
+                },
+                success: function (response) {
+                    if (newStatus == 1) {
+                        showSuccess('Đã từ chối hợp đồng');
+                        var containerAcceptStatus = document.getElementById(`container-accept-status`);
+                        containerAcceptStatus.innerHTML = `
+                                      <select disabled style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+                                                                <option value="">--Trạng thái đồng ý--</option>
+                                                                        <option selected="true" value="1">Từ chối</option>
+                                                                <option value="2">Đồng ý</option>
+                                                            </select>
+                            `;
+
+                        var containerTitleContractStatus = document.getElementById(`title-contract-status`);
+                        containerTitleContractStatus.innerHTML = `
+                                              <p id="title-contract-status" style="margin: 5px 0;"><strong>Trạng thái hợp đồng:</strong>  Đã kết thúc</p>
+                                    `;
+                       
+                        var newContent = `Freelancer ${partnerName} đã từ chối hợp đồng "${contractName}" của bạn`;
+                        $.ajax({
+                            url: '/Notification/CreateNotification',
+                            type: 'POST',
+                            data: {
+                                content: newContent,
+                                freelancerId: recruiterId
+                            },
+                            success: function (response) {
+                                connectionInGetContract.invoke("SendNotifyToUser", recruiterId, newContent).catch(function (err) {//SendMessageToUser
+                                    console.log("gửi notify thành công");
+                                });
+                                console.log('gửi notify thành công');
+                            },
+                            error: function (xhr, status, error) {
+                                showError('Hãy đăng nhập');
+                            }
+                        });
+                    }
+                    else if (newStatus == 2) {
+                        showSuccess('Đã Đồng ý hợp đồng');
+                        var container = document.getElementById(`container-accept-status`);
+                        container.innerHTML = `
+                                              <select disabled style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+                                                                        <option value="">--Trạng thái đồng ý--</option>
+                                                                        <option value="1">Từ chối</option>
+                                                                        <option selected="true" value="2">Đồng ý</option>
+                                                                    </select>
+                                    `;
+
+                        var newContent = `Freelancer ${partnerName} đã đồng ý hợp đồng "${contractName}" của bạn`;
+                        $.ajax({
+                            url: '/Notification/CreateNotification',
+                            type: 'POST',
+                            data: {
+                                content: newContent,
+                                freelancerId: recruiterId
+                            },
+                            success: function (response) {
+                                connectionInGetContract.invoke("SendNotifyToUser", recruiterId, newContent).catch(function (err) {//SendMessageToUser
+                                    console.log("gửi notify thành công");
+                                });
+                                console.log('gửi notify thành công');
+                            },
+                            error: function (xhr, status, error) {
+                                showError('Hãy đăng nhập');
+                            }
+                        });
+                    }
+
+                    
+
+                },
+                error: function (xhr, status, error) {
+                    showError('Hãy đăng nhập');
+                }
+            });
+        });
+
+        $('#contract-status').on('change', function () {
+            var newStatus = $('#contract-status').val();
+            if (newStatus == 2) {
+                var newContractId = $('#contract-id').val();
+                $.ajax({
+                    url: '/Contract/UpdateContractStatus',
+                    type: 'POST',
+                    data: {
+                        contractId: newContractId
+                    },
+                    success: function (response) {
+                        showSuccess('Đã kết thúc hợp đồng');
+                        var containerContractStatus = document.getElementById(`container-contract-status`);
+                        containerContractStatus.innerHTML = `
+                                                                     <select disabled style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+
+                                                                                <option>Hợp đồng đã kết thúc</option>
+                                                                            </select>
+                                                    `;
+
+                        $('#btn-edit-contract').hide();
+
+                        var containerReview = document.getElementById(`container-review`);
+                        containerReview.innerHTML = `
+                                    <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                        <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá đối tác</h2>
+
+                                        <div style="margin-bottom: 10px;">
+                                            <div id="star-rating" style="font-size: 30px;">
+                                                                        <span class="star" data-value="1" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                                                        <span class="star" data-value="2" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                                                        <span class="star" data-value="3" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                                                        <span class="star" data-value="4" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                                                        <span class="star" data-value="5" style="cursor: pointer; color: #FFC107">&#9734;</span>
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-bottom: 10px;">
+                                            <label style="font-weight: bold;">Nội dung đánh giá:</label>
+                                            <textarea id="review-content" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập nội dung đánh giá"></textarea>
+                                        </div>
+
+                                        <!-- Nút Thực hiện đánh giá -->
+                                        <button id="btn-submit-review" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Thực hiện đánh giá</button>
+                                </div>
+                                <hr />
+                                          
+                            `;
+                        var contractName = $('#contract-name').val();
+                        var newContent = `Hợp đồng "${contractName}" của bạn đã kết thúc`;
+                        var partnerId = $('#partner-id').val();
+                        $.ajax({
+                            url: '/Notification/CreateNotification',
+                            type: 'POST',
+                            data: {
+                                content: newContent,
+                                freelancerId: partnerId
+                            },
+                            success: function (response) {
+                                connectionInGetContract.invoke("SendNotifyToUser", partnerId, newContent).catch(function (err) {//SendMessageToUser
+                                    console.log("gửi notify thành công");
+                                });
+                                console.log('gửi notify thành công');
+                            },
+                            error: function (xhr, status, error) {
+                                showError('Hãy đăng nhập');
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            }
+        });
+
+        $('#btn-edit-contract').on('click', function () {
+         
+            var newContractId = $('#contract-id').val();
+            window.location.replace(`/cap-nhat-hop-dong/${newContractId}`);
+        });
+
+
+        /*const stars = document.querySelectorAll('.star');
+        let rating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                rating = this.getAttribute('data-value');
+                stars.forEach(s => s.innerHTML = '&#9734;'); // Reset tất cả các sao
+                for (let i = 0; i < rating; i++) {
+                    stars[i].innerHTML = '&#9733;'; // Đặt lại các sao được chọn
+                }
+            });
+        });
+
+        // Xử lý sự kiện nút đánh giá
+        document.getElementById('btn-submit-review').addEventListener('click', function () {
+            const reviewContent = document.getElementById('review-content').value;
+            alert('Bạn đã đánh giá ' + rating + ' sao với nội dung: ' + reviewContent);
+            // Thực hiện thêm các hành động cần thiết khi gửi đánh giá
+        });*/
+
+        let rating = 0;
+
+        // Gán sự kiện click cho các sao
+        $('body').on('click', '.star', function () {
+            rating = $(this).data('value');
+            $('.star').html('&#9734;'); // Reset tất cả các sao
+            for (let i = 1; i <= rating; i++) {
+                $('.star').eq(i - 1).html('&#9733;'); // Đặt lại các sao được chọn
+            }
+        });
+
+        // Gán sự kiện click cho nút đánh giá
+        $('body').on('click', '#btn-submit-review', function () {
+            const reviewContent = $('#review-content').val();
+            var newContractId = $('#contract-id').val();
+            $.ajax({
+                type: "POST",
+                url: '/Contract/ReviewPartner',
+                data: {
+                    id: newContractId,
+                    point: rating > 0 ? rating : null,
+                    review: reviewContent
+                },
+                success: function (res) {
+                    showSuccess("Thực hiện đánh giá thành công");
+
+                    var containerReview = document.getElementById(`container-review`);
+                    let starValue = 0;
+                    let reviewHTML = `
+                        <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                            <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá</h2>
+
+                            <!-- Chọn số sao -->
+                            <div style="margin-bottom: 10px;">
+                                <div id="star-rating" style="font-size: 30px;">
+                    `;
+
+                    for (let s = 1; s <= rating; s++) {
+                        starValue++;
+                        reviewHTML += `<span class="star" data-value="${starValue}" style="cursor: pointer; color: #FFC107">&#9733;</span>`;
+                                }
+
+                    for (let us = 1; us <= (5 - rating); us++) {
+                        starValue++;
+                        reviewHTML += `<span class="star" data-value="${starValue}" style="cursor: pointer; color: #FFC107">&#9734;</span>`;
+                                }
+
+                                reviewHTML += `
+                                </div>
+                            </div>
+
+                            <!-- Nội dung đánh giá -->
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-weight: bold;">Nội dung đánh giá:</label>
+                                        <textarea id="review-content" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập nội dung đánh giá">${reviewContent}</textarea>
+                            </div>
+
+                            <!-- Nút Thực hiện đánh giá -->
+                            <button id="btn-submit-review" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Cập nhật đánh giá</button>
+                        </div>
+                        <hr />
+                    `;
+
+                    containerReview.innerHTML = reviewHTML;
+                },
+                error: function (err) {
+                    var errors = err.responseJSON.errors;
+                    console.log(errors);
+                    if (errors) {
+                        var error = errors[0];
+                        var messages = error.errors;
+                        if (messages.length > 1) {
+                            showError(messages[1]);
+                        } else {
+                            showError(messages[0]);
+                        }
+                    } else {
+                        showError('Đã xảy ra lỗi không xác định.');
+                    }
+                }
+            });
+            // Thực hiện thêm các hành động cần thiết khi gửi đánh giá
+        });
+
+    </script>
+}

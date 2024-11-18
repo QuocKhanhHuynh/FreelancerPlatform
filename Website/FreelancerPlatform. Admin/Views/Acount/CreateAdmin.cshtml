@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Thêm tài khoản";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Thêm tài khoản</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 style="margin: 0;">Thêm tài khoản quản trị viên</h5>
+        </div>
+        <div class="card-body">
+            <form id="create-admin-form">
+                <!-- Thêm ID cho form -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">Tên tài khoản</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Nhập tên tài khoản" />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Nhập mật khẩu" />
+                </div>
+                <div class="mb-3">
+                    <button type="submit" id="btn-create-admin" class="btn btn-primary">Tạo tài khoản</button>
+                    <a href="/quan-tri-vien" class="btn btn-secondary">Quay lại</a> <!-- Thay đổi đường dẫn nếu cần -->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            $('#create-admin-form').on('submit', function (e) { // Thay đổi ở đây
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newUserName = $('#username').val();
+                var newPassword = $('#password').val();
+
+                $.ajax({
+                    url: '/acount/register', // Đảm bảo đường dẫn này là đúng
+                    type: 'POST',
+                    data: {
+                        userName: newUserName,
+                        password: newPassword
+                    },
+                    success: function (response) {
+                        window.location.replace('/quan-tri-vien');
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors;
+                        
+                        if (errors) {
+                            var error = errors[0]; // Nếu có ít nhất một lỗi
+                            
+                            var messages = error.errors;
+                           
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.'); // Xử lý lỗi không có phản hồi từ máy chủ
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

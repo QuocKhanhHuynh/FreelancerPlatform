@@ -1,0 +1,228 @@
+﻿@model FreelancerPlatform.Application.Dtos.Freelancer.FreelancerViewModel
+
+@{
+    ViewData["Title"] = "Hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+
+    <div style="display: flex;">
+
+        <div style="width: 75%; padding: 20px;" id="freelancer-list">
+            <div class="profile-header" style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div class="profile-info" style="flex-grow: 1;">
+
+                    <img src=@(Model.ImageUrl != null && Model.ImageUrl != "" ? $"/Image/{Model.ImageUrl}" : "/images/default-avatar.jpg") alt="Profile Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                    <div class="profile-info" style="flex-grow: 1;">
+                        <div style="display: flex; align-items: center;">
+                            <h1 style="font-size: 24px; margin: 0; margin-right: 10px;">@Model.LastName @Model.FirstName</h1>
+                            @{
+                                if (Model.Point > 0)
+                                {
+                                    <div style="display: flex; align-items: center;">
+                                        @{
+                                            for (var s = 1; s <= (int)Model.Point; s++)
+                                            {
+                                                <span style="color: gold; font-size: 18px;">⭐</span>
+                                            }
+                                        }
+                                        <span style="font-size: 18px; margin-left: 5px;">(@Model.Point)</span>
+                                        <span style="font-size: 18px; margin-left: 5px;">@Model.ReviewQuanlity <i class="fa fa-pen"></i></span>
+                                        <span style="font-size: 18px; margin-left: 5px;">| @Model.ContractQuanlity  <i class="fa fa-file"></i></span>
+                                        <span style="font-size: 18px; margin-left: 5px;">| @Model.Point <i class="fa fa-star"></i></span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <p class="job-title" style="font-size: 18px; color: gray; margin: 5px 0;">@string.Join(" - ", Model.Categories.Select(x => x.Name))</p>
+                        @Html.Raw(Model.About);
+
+
+
+                        <div class="freelancer-info" style="margin-top: 10px;">
+                            <p style="font-size: 16px; margin: 5px 0;">
+                                <span><strong>Mức lương một giờ:</strong> @Model.RateHour.GetValueOrDefault().ToString("N0") đ</span>
+                            </p>
+                            <p style="font-size: 16px; margin: 5px 0;"><strong>Số đánh giá:</strong> 150</p>
+                            <p style="font-size: 16px; margin: 5px 0;"><strong>Thu nhập:</strong> 200.000đ</p>
+                        </div>
+                    </div>
+
+                </div>
+                
+            </div>
+           
+            <div class="skills-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng</h2>
+                @{
+                    if (Model.Skills.Count > 0)
+                    {
+                        <ul class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                            @{
+                                foreach (var i in Model.Skills)
+                                {
+                                    <li style="margin: 5px;">
+                                        <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px;">@i.Name</span>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin kỹ năng</p>
+                    }
+                }
+
+            </div>
+            <div class="experient-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Kinh nghiệm</h2>
+                @{
+                    if (Model.Experience != null)
+                    {
+                        <p>@Html.Raw(Model.Experience)</p>
+
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin kinh nghiệm</p>
+                    }
+                }
+
+            </div>
+            <div class="education-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Học vấn</h2>
+                @{
+                    if (Model.Education != null)
+                    {
+                        <p>@Html.Raw(Model.Education)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin học vấn</p>
+                    }
+                }
+
+            </div>
+            <div class="certification-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Chứng chỉ</h2>
+                @{
+                    if (Model.Certification != null)
+                    {
+                        <p>@Html.Raw(Model.Certification)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin chứng chỉ</p>
+                    }
+                }
+
+            </div>
+            <div class="archive-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Thành tựu</h2>
+                @{
+                    if (Model.Archive != null)
+                    {
+                        <p>@Html.Raw(Model.Archive)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin thành tựu</p>
+                    }
+                }
+
+            </div>
+            <hr />
+            <div class="reviews-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá</h2>
+                @{
+                    if (ViewBag.ReviewOfFreelancer.Count > 0)
+                    {
+                        <ul class="reviews-list" style="list-style-type: none; padding: 0;">
+                            @{
+                                foreach (var r in ViewBag.ReviewOfFreelancer)
+                                {
+                                    <li class="review-item" style="margin-bottom: 20px;">
+                                        <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                            <img src=@(r.ImageUrl != null && r.ImageUrl != "" ? $"/Image/{r.ImageUrl}" : "/images/default-avatar.jpg") alt="Reviewer Avatar" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                            <div class="review-info">
+                                                <h3 class="review-username" style="font-size: 18px; margin: 0;">@r.LastName @r.FirstName</h3>
+                                                <p class="review-date" style="font-size: 14px; color: gray;">@r.CreateDay.ToString("dd/MM/yyyy")</p>
+                                                <div class="review-rating" style="color: gold; font-size: 18px;">
+                                                    @{
+                                                        for (var s = 1; s <= (int)r.Point; s++)
+                                                        {
+                                                            <span>⭐</span>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="review-content" style="font-size: 16px; line-height: 1.5;">@r.Review</p>
+                                    </li>
+                                    <hr style="border: 0; border-top: 1px solid #ddd;">
+                                }
+                            }
+
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Chưa có đánh giá</p>
+                    }
+                }
+            </div>
+        </div>
+
+
+
+        <div style="width: 30%; padding: 20px; border-left: 1px solid #ddd;">
+
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Thông tin xác thực</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (Model.PaymentVerification == true)
+                            {
+                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                <strong><i class="fas fa-credit-card" style="color: green"></i> Tài khoản ngân hàng:</strong>
+
+                                <span style="color: green;">Đã xác thực</span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                <strong><i class="fas fa-credit-card"></i> Tài khoản ngân hàng:</strong>
+
+                                <span style="color: black;">Chưa xác thực</span>
+                            }
+                        }
+                    </li>
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (Model.About == null || Model.Categories.Count == 0 || Model.Skills.Count == 0)
+                            {
+                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                <strong><i class="fas fa-user"></i> Thông tin hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                <strong><i class="fas fa-user" style="color: green"></i> Thông tin hồ sơ:</strong> <span style="color: green;">Đã xác thực</span>
+                            }
+                        }
+                    </li>
+                    <li style="margin: 5px 0;">
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                        <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

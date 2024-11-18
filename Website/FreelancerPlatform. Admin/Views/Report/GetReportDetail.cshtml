@@ -1,0 +1,141 @@
+﻿@model FreelancerPlatform.Application.Dtos.Report.ReportViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết báo cáo";
+}
+
+<input id="report-id" value="@Model.Id" type="hidden"/>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Báo cáo</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h5 style="margin: 0;">Thông tin báo cáo</h5>
+            <!-- Nút thêm tài khoản nằm ở góc phải phía trên bảng -->
+            <span  id="container-btn-review-report">
+                <button title="Đánh giá" id="btn-review-report" style="padding: 8px 12px; text-decoration: none; background-color: transparent; border: 1px solid #007bff; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                    <i class="fas fa-flag"></i>
+                </button>
+            </span>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <p><strong>Mã tài khoản:</strong> @Model.Id</p>
+                    <p><strong>Tên tài khoản:</strong> @Model.LastName @Model.FirstName</p>
+                    <p><strong>Thời gian báo cáo:</strong> @Model.DateCreate.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Số lần báo cáo:</strong> @Model.NumberReport</p>
+                </div>
+            </div>
+            <div>
+                <h5>Nội dung Báo cáo</h5>
+                <p style="padding: 15px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
+                    @Model.Content
+                </p>
+            </div>
+            <div style="margin-top: 20px;">
+                <button id="btn-back" class="btn btn-secondary">
+                    Quay lại
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        $('body').on('click', '#btn-back', function (e) {
+            e.preventDefault();
+
+            window.location.replace(`/bao-cao`)
+        });
+        UnReviewReport();
+        ReviewReport();
+
+        function ReviewReport(){
+            $('body').on('click', '#btn-review-report', function (e) {
+               // alert('ok');
+                const newId = $('#report-id').val();
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/report/reviewreport',
+                    data: {
+                        id: newId
+                    },
+                    success: function (res) {
+
+
+                        var container = $('#container-btn-review-report');
+                        var html = `
+                                                                     <button title="Bỏ đánh giá" id="btn-un-review-report" style="padding: 8px 12px; text-decoration: none; color: #007bff; background-color: transparent; border: 1px solid #007bff; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    <i class="fas fa-flag"></i>
+                                        </button>
+                            `;
+                        container.html(html);
+                        UnReviewReport();
+                        ReviewReport();
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        }
+
+        function UnReviewReport(){
+            $('body').on('click', '#btn-un-review-report', function (e) {
+
+                const newId = $('#report-id').val();
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/report/unreviewreport',
+                    data: {
+                        id: newId
+                    },
+                    success: function (res) {
+
+
+                        var container = $('#container-btn-review-report');
+                        var html = `
+                                                                             <button title="Đánh giá" id="btn-review-report" style="padding: 8px 12px; text-decoration: none; background-color: transparent; border: 1px solid #007bff; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                            <i class="fas fa-flag"></i>
+                                                </button>
+                                    `;
+                        container.html(html);
+                        UnReviewReport();
+                        ReviewReport();
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        }
+
+    </script>
+}

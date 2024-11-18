@@ -1,0 +1,402 @@
+﻿@using FreelancerPlatform.Client.Helpers
+@using System.Text.RegularExpressions
+@using System.Web
+@model List<FreelancerPlatform.Application.Dtos.Freelancer.FreelancerQuickViewModel>
+
+@{
+    ViewData["Title"] = "Tìm freelancer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section freelancerActive {
+    active
+}
+
+<input type="hidden" id="items" value="@ViewBag.Items" />
+<input type="hidden" id="skill-id" value="@ViewBag.SkillId" />
+<input type="hidden" id="category-id" value="@ViewBag.CategoryId" />
+
+
+
+<div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+
+    <!-- Header with search -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+        <input value="@ViewBag.Keyword" type="text" id="searchKeyword" placeholder="Nhập tên freelancer để tìm kiếm" style="width: 90%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px; margin-left: 10px;">
+        <button id="btn-search-freelancer" class="btn btn-primary"><i class="fa fa-search" style="color: #fff"></i> Tìm</button>
+    </div>
+
+    <!-- Small dropdown positioned on the right side -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 5px; margin-right: 22px;">
+        <select id="sortBy" style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+            <option value="">--Sắp xếp theo--</option>
+            <option value="1">Mức lương theo giờ</option>
+            <option value="2">Số sao</option>
+            <option value="3">Số hợp đồng</option>
+        </select>
+    </div>
+
+    <div style="display: flex;">
+
+        <!-- Filter Section -->
+        <div style="width: 25%; padding: 20px; border-right: 1px solid #ddd;">
+            <h4 style="margin: 10px 0; font-size: 16px;">Lọc</h4>
+            <!-- Salary Filter -->
+            <label for="minSalary" style="margin-bottom: 5px; display: block; font-size: 14px;">Mức lương nhỏ nhất trên giờ</label>
+            <input type="text" id="minSalary" placeholder="Nhập mức nhỏ nhất" style="width: 90%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <label for="maxSalary" style="margin-bottom: 5px; display: block; font-size: 14px;">Mức lương lớn nhất trên giờ</label>
+            <input type="text" id="maxSalary" placeholder="Nhập mức lớn nhất" style="width: 90%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <!-- Category Filter -->
+            <h4 style="margin: 10px 0; font-size: 16px;">Lĩnh vực hoat động</h4>
+            @{
+                foreach(var i in ViewBag.Categories)
+                {
+                            <div style="margin-bottom: 2px;">
+                                <input type="checkbox" checked="@(ViewBag.CategoryId == i.Id)" class="category-checkbox" value="@i.Id" style="margin-right: 10px;">
+                                <label for="category1">@i.Name</label>
+                            </div>
+                }
+            }
+            <!-- Skill Filter -->
+            <h4 style="margin: 10px 0; font-size: 16px;">Kỹ năng</h4>
+            @{
+                foreach(var i in ViewBag.Skills)
+                {
+                            <div style="margin-bottom: 2px;">
+
+                            <input type="checkbox" checked="@( ViewBag.SkillId == i.Id)" class="skill-checkbox" value="@i.Id" style="margin-right: 10px;">
+                                <label for="skill1">@i.Name</label>
+                            </div>
+                }
+            }
+        </div>
+
+        <!-- Freelancer List Section -->
+        <div style="width: 75%; padding: 20px;" id="freelancer-list">
+            @{
+                foreach(var i in Model)
+                {
+                            <div data-keyword="@(i.LastName + " " + i.FirstName))" data-salary="@i.RateHour" class="freelancer-item" data-skill="@string.Join(",", i.Skills.Select(x => x.Id).ToList())" data-category="@string.Join(",", i.Categories.Select(x => x.Id).ToList())" style="display: flex; justify-content: space-between; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #fff; position: relative;">
+                                <div style="display: flex; flex: 1;">
+                                    <img src=@(i.ImageUrl != null && i.ImageUrl != ""? $"/Image/{i.ImageUrl}" : "/images/default-avatar.jpg") alt="Freelancer Avatar" style="width: 80px; height: 80px; border-radius: 50%; margin-right: 15px;">
+                                    <div style="max-width: 600px; position: relative;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <h4 style="margin: 0; font-size: 16px;">@i.LastName @i.FirstName</h4>
+                                                <div style="color: gold; font-size: 16px; display: inline-block;">
+                                            @{
+                                                for(var s = 1; s<= (int)i.Point; s++)
+                                                {
+                                                    <span>★</span>
+                                                }
+                                            }
+                                                </div>
+                                                <div style="font-size: 12px; display: inline-block; margin-left: 5px;">@i.ReviewQuanlity <i class="fa fa-pen"></i></div>
+
+                                                <!-- New fields for contracts and rating points -->
+                                                <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| @i.ContractQuanlity  <i class="fa fa-file"></i></div>
+                                        <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| @i.Point <i class="fa fa-star"></i></div>
+
+                                                <p style="font-size: 14px; margin: 5px 0;">@(string.Join(" - ", i.Categories.Select(x => x.Name).ToList()))</p>
+                                            </div>
+                                        </div>
+                                <p style="font-size: 16px; margin: 10px 0;">@(Helper.CutString(HttpUtility.HtmlDecode(Regex.Replace(i.About, "<.*?>", string.Empty))))</p>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                            
+                                            @{
+                                        foreach(var j in i.Skills)
+                                        {
+                                                            <span style="border-radius: 15px; padding: 5px 10px; background-color: #0078D4; color: #fff; font-size: 12px;">@j.Name</span>
+                                        }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Heart icon -->
+                                <div id="container-btn-potient-@i.Id" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 5px;">
+                            
+                                    @{
+                                        if (ViewBag.PotientOfFreelancer.Contains(i.Id))
+                                    {
+                                    <button data-potient="@i.Id" style="background: none; border: none; cursor: pointer;" title="Đã thêm yêu thích" class="gallery-icon remove-potient">
+                                           
+                                        <i class="fa fa-heart" style="font-size: 24px; color: red; margin: 0 10px;"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                    <button data-potient="@i.Id" style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient">
+                                               
+                                        <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                        </button>
+                                    }
+
+                                }
+                                </div>
+
+
+                                <div style="position: absolute; top: 15px; right: 15px; font-size: 20px; color: #555;">
+                                    @($"{i.RateHour:N0}/giờ")
+                                </div>
+
+
+                                <div style="display: flex; flex-direction: row; gap: 10px; position: absolute; bottom: 15px; right: 15px;">
+                            <button style="padding: 8px 15px; background-color: #fff; color: #0078D4; border: solid;  border-width: 1px; border-radius: 5px; border-color: #0078D4; cursor: pointer;"><a href="~/tin-nhan?freelancerB=@i.Id">Liên hệ</a></button>
+                                     <button style="padding: 8px 15px; background-color: #0078D4; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><a href="~/chi-tiet-freelancer/@i.Id">Chi tiết</a></button>
+                                </div>
+                            </div>
+
+                }
+            }
+        </div>
+
+    </div>
+
+</div>
+
+@section script{
+    <script>
+        $(document).ready(function () {
+
+            //filterKeyword();
+            //filterFreelancerCategories();
+            //filterFreelancerSkills();
+            initial();
+            addPotient();
+            removePotient();
+
+
+            function initial(){
+                var keyword = $('#searchKeyword').val();
+                if (isNaN(keyword) || keyword.trim() != '') {
+                    filterKeyword();
+                }
+
+                var categoryId = $('#category-id').val();
+                if (isNaN(categoryId) || categoryId != 0) {
+                    filterFreelancerCategories();
+                }
+
+                var skillId = $('#skill-id').val();
+                if (isNaN(skillId) || skillId != 0) {
+                    filterFreelancerSkills();
+                }
+            }
+
+           
+            
+            $('.category-checkbox').change(function () {
+                filterFreelancerCategories();
+            });
+
+            
+            function filterFreelancerCategories() {
+                var selectedCategories = [];
+                $('.category-checkbox:checked').each(function () {
+                    selectedCategories.push($(this).val());
+                });
+
+                
+                if (selectedCategories.length === 0) {
+                    $('.freelancer-item').show();
+                    return;
+                }
+
+                
+                $('.freelancer-item').hide();
+
+                
+                $('.freelancer-item').each(function () {
+                    var itemCategories = $(this).data('category').toString().split(',');
+                    var hasCategory = selectedCategories.some(category => itemCategories.includes(category));
+                    if (hasCategory) {
+                        
+                        $(this).show();
+                    }
+
+                });
+            }
+
+
+            $('.skill-checkbox').change(function () {
+                filterFreelancerSkills();
+            });
+
+
+            function filterFreelancerSkills() {
+                var selectedSkills = [];
+                $('.skill-checkbox:checked').each(function () {
+                    selectedSkills.push($(this).val());
+                });
+                
+
+                if (selectedSkills.length === 0) {
+                    $('.freelancer-item').show();
+                    return;
+                }
+
+
+                $('.freelancer-item').hide();
+
+
+                $('.freelancer-item').each(function () {
+                    var itemSkills = $(this).data('skill').toString().split(',');
+                    var hasSkill = selectedSkills.some(skill => itemSkills.includes(skill));
+                    if (hasSkill) {
+                        
+                        $(this).show();
+                    }
+                });
+            }
+
+            $('#minSalary').on('input', function () {
+                formatCurrency(this);
+
+                var salary = convertFormatCurrencyToNumber($('#minSalary').val()); //parseInt(); //$('#minSalary').val()
+                if (isNaN(salary) || salary == 0) {
+                    $('.freelancer-item').show();
+                    return;
+                }
+                $('.freelancer-item').hide();
+                $('.freelancer-item').each(function () {
+                    var salaryOfItem = parseInt($(this).data('salary'));
+                    
+                    if (salaryOfItem >= salary) {
+                        $(this).show();
+                    }
+                });
+            });
+
+            $('#maxSalary').on('input', function () {
+                formatCurrency(this);
+            });
+
+            $('#maxSalary').on('change', function () {
+                
+                var salary = convertFormatCurrencyToNumber($('#maxSalary').val());
+                
+                if (isNaN(salary) || salary == 0) {
+                    $('.freelancer-item').show();
+                    return;
+                }
+                $('.freelancer-item').hide();
+                $('.freelancer-item').each(function () {
+                    var salaryOfItem = parseInt($(this).data('salary'));
+
+                    if (salaryOfItem <= salary) {
+                        $(this).show();
+                    }
+                });
+            });
+
+            $('#sortBy').on('change', function () {
+                var valueSelect = $('#sortBy').val();
+               //alert(valueSelect);
+                if (isNaN(valueSelect) || valueSelect == 0) {
+                    $('.freelancer-item').show();
+                    return;
+                }
+                var items = $('.freelancer-item').get();
+                items.sort(function (a, b) {
+                    var salaryA = parseInt($(a).data('salary'));
+                    var salaryB = parseInt($(b).data('salary'));
+
+                    if (valueSelect == 1) {
+                        return salaryB - salaryA;
+                    } /*else if (valueSelect == 2) {
+                        return salaryB - salaryA;
+                    }*/
+                });
+                $.each(items, function (index, item) {
+                    $(item).parent().append(item);
+                });
+                
+            });
+
+            $('#btn-search-freelancer').on('click', function () {
+                filterKeyword();
+            });
+
+            function filterKeyword(){
+                var value = $('#searchKeyword').val().trim();
+
+                if (value === '') {
+                    $('.freelancer-item').show();
+                    return;
+                }
+
+                $('.freelancer-item').hide();
+                $('.freelancer-item').each(function () {
+                    var keyword = $(this).data('keyword');
+                    if (keyword.toUpperCase().includes(value.toUpperCase())) {
+                        $(this).show();
+                    }
+                });
+            }
+
+
+           function addPotient(){
+                $('.add-potient').on('click', function () {
+                    var id = $(this).data('potient');
+
+                    $.ajax({
+                        url: '/Freelancer/AddFreelancerPotient',
+                        type: 'POST',
+                        data: {
+                            freelancerPotientId: id
+                        },
+                        success: function (response) {
+                            showSuccess('Thêm yêu thích thành công.');
+                            var container = document.getElementById(`container-btn-potient-${id}`); // Corrected variable name
+                            container.innerHTML = `
+                                                <button data-potient="${id}" style="background: none; border: none; cursor: pointer;" title="Đã thêm yêu thích" class="gallery-icon remove-potient">
+
+                                                        <i class="fa fa-heart" style="font-size: 24px; color: red; margin: 0 10px;"></i>
+                                                        </button>
+                            `;
+                            removePotient();
+                        },
+                        error: function (xhr, status, error) {
+                            showError('Hãy đăng nhập');
+                        }
+                    });
+                });
+           }
+
+
+           function removePotient(){
+                $('.remove-potient').on('click', function () {
+                    var id = $(this).data('potient');
+
+                    $.ajax({
+                        url: '/Freelancer/MinusFreelancerPotient',
+                        type: 'POST',
+                        data: {
+                            freelancerPotientId: id
+                        },
+                        success: function (response) {
+                            showSuccess('Xóa yêu thích thành công.');
+                            var container = document.getElementById(`container-btn-potient-${id}`); // Corrected variable name
+                            container.innerHTML = `
+                                                <button data-potient="${id}" style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient">
+                                                    <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                        </button>
+                                    `;
+                            addPotient();s
+                        },
+                        error: function (err) {
+                            showError('Hãy đăng nhập');
+                        }
+                    });
+                });
+           }
+
+
+
+
+           
+
+        });
+    </script>
+}

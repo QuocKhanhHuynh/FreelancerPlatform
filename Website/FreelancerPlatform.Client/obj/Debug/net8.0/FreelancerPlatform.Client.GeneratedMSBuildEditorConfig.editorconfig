@@ -1,0 +1,183 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = FreelancerPlatform.Client
+build_property.RootNamespace = FreelancerPlatform.Client
+build_property.ProjectDir = D:\Luan van\src1 - Copy\FreelancerPlatform\FreelancerPlatform.Client\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Luan van\src1 - Copy\FreelancerPlatform\FreelancerPlatform.Client
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Acount/EditPassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNvdW50XEVkaXRQYXNzd29yZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Acount/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNvdW50XExvZ2luLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Acount/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNvdW50XFJlZ2lzdGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Community/CreatePost.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tbXVuaXR5XENyZWF0ZVBvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Community/GetPost.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tbXVuaXR5XEdldFBvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Community/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tbXVuaXR5XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Community/UpdatePost.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tbXVuaXR5XFVwZGF0ZVBvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Contract/CreateContract.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcQ3JlYXRlQ29udHJhY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Contract/GetContract.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcR2V0Q29udHJhY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Contract/UpdateContract.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcVXBkYXRlQ29udHJhY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Error/PageNotFound.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXJyb3JcUGFnZU5vdEZvdW5kLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/EditPayment.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxFZGl0UGF5bWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/EditProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxFZGl0UHJvZmlsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/GetFreelancer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxHZXRGcmVlbGFuY2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/GetFreelancerDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxHZXRGcmVlbGFuY2VyRGV0YWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/NavigateFreelancer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxOYXZpZ2F0ZUZyZWVsYW5jZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/NavigateHire.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxOYXZpZ2F0ZUhpcmUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Freelancer/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJlZWxhbmNlclxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Inbox/GetInbox.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5ib3hcR2V0SW5ib3guY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Job/EditJob.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSm9iXEVkaXRKb2IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Job/GetJob.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSm9iXEdldEpvYi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Job/GetJobDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSm9iXEdldEpvYkRldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Job/PostJob.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSm9iXFBvc3RKb2IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/CategorySearchJob/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2F0ZWdvcnlTZWFyY2hKb2JcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/Category/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2F0ZWdvcnlcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/ChatCountUnSeen/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2hhdENvdW50VW5TZWVuXERlZmF1bHQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/NotifyList/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTm90aWZ5TGlzdFxEZWZhdWx0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/NotifyQuanlity/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTm90aWZ5UXVhbmxpdHlcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/SkillSearchJob/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcU2tpbGxTZWFyY2hKb2JcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Components/Skill/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcU2tpbGxcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Transaction/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Transaction/PaymentCallback.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cUGF5bWVudENhbGxiYWNrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Luan van/src1 - Copy/FreelancerPlatform/FreelancerPlatform.Client/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-uk8ofsyiem

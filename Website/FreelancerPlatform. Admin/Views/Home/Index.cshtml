@@ -1,0 +1,88 @@
+﻿@model FreelancerPlatform._Admin.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="container-fluid px-4">
+    <div style="margin: auto" class="container-fluid px-4">
+        <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; max-width: 1500px; padding: 30px;">
+
+            <div style="flex: 1 1 300px; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; height: 180px;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 14px rgba(0, 0, 0, 0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.1)';">
+                <div style="font-size: 1.3rem; color: #555; margin-bottom: 15px;">Số lượng tài khoản</div>
+                <div style="font-size: 3rem; font-weight: bold; color: #007bff;" id="new-accounts">@Model.AcountNumber.ToString("N0")</div>
+            </div>
+
+            <div style="flex: 1 1 300px; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; height: 180px;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 14px rgba(0, 0, 0, 0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.1)';">
+                <div style="font-size: 1.3rem; color: #555; margin-bottom: 15px;">Số lượng truy cập</div>
+                <div style="font-size: 3rem; font-weight: bold; color: #007bff;" id="visits">@Model.AsssetNumber.ToString("N0")</div>
+            </div>
+
+            <div style="flex: 1 1 300px; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; height: 180px;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 14px rgba(0, 0, 0, 0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.1)';">
+                <div style="font-size: 1.3rem; color: #555; margin-bottom: 15px;">Số lượng hợp đồng</div>
+                <div style="font-size: 3rem; font-weight: bold; color: #007bff;" id="contracts">@Model.ContractNumber.ToString("N0")</div>
+            </div>
+
+            <div style="flex: 1 1 300px; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; height: 180px;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 14px rgba(0, 0, 0, 0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.1)';">
+                <div style="font-size: 1.3rem; color: #555; margin-bottom: 15px;">Số lượng giao dịch</div>
+                <div style="font-size: 3rem; font-weight: bold; color: #007bff;" id="transactions">@Model.TransactionNumber.ToString("N0")</div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex;">
+            <h5 style="margin: 0;">Yêu cầu giao dịch gần đây</h5>
+            
+        </div>
+
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã giao dịch</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Thời gian thực hiện</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Số tiền</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Trạng thái</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Transactions)
+                    {
+                        <tr>
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.CreateDay.ToString("dd/MM/yyy HH:mm")</td>
+                            <td style="padding: 12px;">@i.Amount.ToString("N0") đ</td>
+                            <td style="padding: 12px;">@(i.Status == false ? "Chưa xử lý" : "Đã xử lý")</td>
+                            <td id="container-btn-lock-@i.Id" style="padding: 12px;">
+                                <button class="detail-transaction" data-transaction="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xem
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        $('body').on('click', '.detail-transaction', function (e) { // Thay đổi ở đây
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+            var newId = $(this).data("transaction");
+            window.location.replace(`/chi-tiet-giao-dich/${newId}`)
+        });
+    </script>
+}

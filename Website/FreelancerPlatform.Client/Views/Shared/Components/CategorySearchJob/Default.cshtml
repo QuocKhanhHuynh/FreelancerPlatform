@@ -1,0 +1,15 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Category.CategoryQuickViewModel>
+
+<ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start;">
+    @{
+        foreach (var i in Model)
+        {
+            <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                <a href="~/tim-du-an?categoryId=@i.Id">
+                    <img src="/Image/@i.ImageUrl" alt="@i.Name" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                    <p>@i.Name</p>
+                </a>
+            </li>
+        }
+    }
+</ul>

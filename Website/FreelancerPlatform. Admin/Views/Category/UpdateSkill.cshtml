@@ -1,0 +1,66 @@
+﻿@model FreelancerPlatform.Application.Dtos.Skill.SkillQuickViewModel
+
+
+@{
+    ViewData["Title"] = "Sửa kỹ năng";
+}
+
+<input type="hidden" id="skill-id" value="@Model.Id" />
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Thêm lĩnh vực</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 style="margin: 0;">Sửa kỹ năng</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="skill-name" class="form-label">Tên kỹ năng</label>
+                <input value="@Model.Name" type="text" id="skill-name" name="skill-name" class="form-control" placeholder="Nhập tên kỹ năng" />
+            </div>
+            <div class="mb-3">
+                <button type="submit" id="btn-update-skill" class="btn btn-primary">Lưu lại</button>
+                <a href="/ky-nang" class="btn btn-secondary">Quay lại</a> <!-- Thay đổi đường dẫn nếu cần -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '#btn-update-skill', function (e) {
+
+                const newName = $('#skill-name').val();
+                const newId = $('#skill-id').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '/category/updateskill',
+                    data: {
+                        name: newName,
+                        id: newId
+                    },
+                    success: function (res) {
+                        window.location.replace('/ky-nang');
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

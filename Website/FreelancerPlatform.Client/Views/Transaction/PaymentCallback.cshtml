@@ -1,0 +1,16 @@
+﻿@model FreelancerPlatform.Client.Models.VnPaymentResponseModel
+
+
+
+<div style="text-align: center; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); height: 66.67vh; display: flex; flex-direction: column; justify-content: center;">
+    <h1 style="color: #4CAF50; font-size: 24px; margin-bottom: 20px;">Thanh toán hợp đồng @(Model.VnPayResponseCode.Equals("00") ? "thành công" : "không thành công")</h1>
+    @if (Model.VnPayResponseCode.Equals("00"))
+    {
+        <p style="font-size: 18px; color: #333;">Bạn đã hoàn thành yêu cầu xác minh giao dịch cho hợp đồng với số tiền @Model.Amount.ToString("N0")đ</p>
+    }
+    else
+    {
+        <p style="font-size: 18px; color: #333;">Giao dịch đã xảy ra lỗi</p>
+    }
+    <a href="~/chi-tiet-hop-dong/@Model.OrderDescription" style="display: inline-block; background-color: #0078D4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-size: 16px; cursor: pointer; align-self: center;">Quay trở lại</a>
+</div>

@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="login-form" style="max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center;">Đăng Nhập</h2>
+    <form>
+        <!-- Trường Email -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="email">Email:</label>
+            <input type="email" id="email-login" class="form-control" placeholder="Nhập địa chỉ email" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+        </div>
+
+        <!-- Trường Mật Khẩu với icon con mắt -->
+        <div class="form-group" style="position: relative; margin-bottom: 20px;">
+            <label for="password">Mật Khẩu:</label>
+            <input type="password" id="password-login" class="form-control" placeholder="Nhập mật khẩu" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+            <!-- Icon con mắt -->
+            <i id="toggle-password" class="fa fa-eye" style="position: absolute; right: 10px; top: 72%; transform: translateY(-50%); cursor: pointer;"></i>
+        </div>
+
+        <!-- Nút Đăng Nhập -->
+        <button id="btn-login" type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+            Đăng Nhập
+        </button>
+
+        <button id="btn-google-login" type="button" class="btn btn-google" style="width: 100%; padding: 12px; border: solid 1px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; background-color: white; color: #0078D4; display: flex; align-items: center; justify-content: center;">
+            <img src="/images/Google__G__logo.svg.png" alt="Google Logo" style="width: 20px; height: 20px; margin-right: 8px;">
+            Đăng Nhập với Google
+        </button>
+
+        <!-- Thẻ điều hướng đến trang quên mật khẩu -->
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="#" style="text-decoration: none; font-size: 14px;">Quên mật khẩu?</a>
+        </div>
+    </form>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            // Toggle password visibility
+            $('#toggle-password').on('click', function () {
+                var passwordInput = $('#password-login');
+                var icon = $(this);
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Handle login
+            $('body').on('click', '#btn-login', function (e) {
+                e.preventDefault();
+
+                var newEmail = $('#email-login').val();
+                var newPassword = $('#password-login').val();
+
+                $.ajax({
+                    url: '/dang-nhap',
+                    type: 'POST',
+                    data: {
+                        email: newEmail,
+                        password: newPassword
+                    },
+                    success: function (response) {
+                        window.location.replace('/');
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                        var errors = xhr.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+
+            $('body').on('click', '#btn-google-login', function () {
+                window.location.replace('/dang-nhap-google')
+            });
+        });
+    </script>
+}

@@ -1,0 +1,54 @@
+﻿body {
+}
+
+.notification {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: #333;
+    color: white;
+    padding: 15px 15px 15px 45px; /* Thêm khoảng cách cho biểu tượng bên trái */
+    border-radius: 5px;
+    border: 2px solid white; /* Viền trắng */
+    z-index: 1000;
+    font-size: 16px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa icon và nội dung */
+}
+
+/* Thông báo thành công */
+.notification-success {
+    background-color: #0078D4;
+}
+
+/* Thông báo lỗi */
+.notification-error {
+    background-color: #f44336;
+}
+
+/* Khi thông báo hiển thị */
+.notification-show {
+    opacity: 1;
+    transform: translateX(-66%);
+    right: 33px;
+}
+
+/* Biểu tượng cho thông báo thành công */
+.notification-success::before {
+    content: '✔'; /* Dấu stick */
+    font-size: 24px; /* Kích thước biểu tượng */
+    margin-right: 10px; /* Khoảng cách với nội dung */
+    color: white; /* Màu trắng cho dấu stick */
+}
+
+/* Biểu tượng cho thông báo lỗi */
+.notification-error::before {
+    content: '✖'; /* Dấu X */
+    font-size: 24px;
+    margin-right: 10px;
+    color: white;
+}

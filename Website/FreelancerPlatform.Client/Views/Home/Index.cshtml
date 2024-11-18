@@ -1,0 +1,422 @@
+﻿@using FreelancerPlatform.Client.Helpers
+@using System.Web
+@using System.Text.RegularExpressions
+@model FreelancerPlatform.Client.Models.HomeViewModel
+ <!--/ Header end -->
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@section homeActive{
+    active
+}
+
+<div class="banner-carousel banner-carousel-1 mb-0">
+    <div class="banner-carousel-item" style="background-image:url(/images/BannerFreelancer.jpg)">
+        <div class="slider-content">
+            <div class="container h-100">
+                <div class="row align-items-center h-100">
+                    <div class="col-md-12 text-center">
+                        <h2 class="slide-title" data-animation-in="slideInLeft">Nền tảng kết nối Freelancer</h2>
+                        <h3 class="slide-sub-title" data-animation-in="slideInRight">Cho người Việt</h3>
+                        <p data-animation-in="slideInLeft" data-duration-in="1.2">
+                            <a href="~/tim-du-an" class="slider btn btn-primary">Tìm công việc</a>
+                            <a href="~/freelancer" class="slider btn btn-primary border">Tìm Freelancer</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!--
+
+     <div class="banner-carousel-item" style="background-image:url(/images/slider-main/bg2.jpg)">
+         <div class="slider-content text-left">
+             <div class="container h-100">
+                 <div class="row align-items-center h-100">
+                     <div class="col-md-12">
+                         <h2 class="slide-title-box" data-animation-in="slideInDown">World Class Service</h2>
+                         <h3 class="slide-title" data-animation-in="fadeIn">When Service Matters</h3>
+                         <h3 class="slide-sub-title" data-animation-in="slideInLeft">Your Choice is Simple</h3>
+                         <p data-animation-in="slideInRight">
+                             <a href="services.html" class="slider btn btn-primary border">Our Services</a>
+                         </p>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+     <div class="banner-carousel-item" style="background-image:url(/images/slider-main/bg3.jpg)">
+         <div class="slider-content text-right">
+             <div class="container h-100">
+                 <div class="row align-items-center h-100">
+                     <div class="col-md-12">
+                         <h2 class="slide-title" data-animation-in="slideInDown">Meet Our Engineers</h2>
+                         <h3 class="slide-sub-title" data-animation-in="fadeIn">We believe sustainability</h3>
+                         <p class="slider-description lead" data-animation-in="slideInRight">We will deal with your failure that determines how you achieve success.</p>
+                         <div data-animation-in="slideInLeft">
+                             <a href="contact.html" class="slider btn btn-primary" aria-label="contact-with-us">Get Free Quote</a>
+                             <a href="about.html" class="slider btn btn-primary border" aria-label="learn-more-about-us">Learn more</a>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+   -->
+</div>
+
+<section id="facts" class="facts-area dark-bg">
+    <div class="container">
+        <div class="facts-wrapper">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 ts-facts">
+                    <div style="color: #0078D4; text-align: center;">
+                        <i style="font-size: 40px;" class="fa fa-star"></i>
+                    </div>
+                    <div class="ts-facts-content" style="text-align: center;">
+                        <h2 class="ts-facts-num"><span class="counterUp" data-count="1000">0</span></h2>
+                        <h3 class="ts-facts-title">Lượt truy cập</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-sm-6 ts-facts">
+                    <div style="color: #0078D4; text-align: center;">
+                        <i style="font-size: 40px;" class="fa fa-user"></i>
+                    </div>
+                    <div class="ts-facts-content" style="text-align: center;">
+                        <h2 class="ts-facts-num"><span class="counterUp" data-count="1000">0</span></h2>
+                        <h3 class="ts-facts-title">Thành viên</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-sm-6 ts-facts">
+                    <div style="color: #0078D4; text-align: center;">
+                        <i style="font-size: 40px;" class="fa fa-briefcase"></i>
+                    </div>
+                    <div class="ts-facts-content" style="text-align: center;">
+                        <h2 class="ts-facts-num"><span class="counterUp" data-count="1000">0</span></h2>
+                        <h3 class="ts-facts-title">Công việc</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-sm-6 ts-facts">
+                    <div style="color: #0078D4; text-align: center;">
+                        <i style="font-size: 40px;" class="fa fa-book-open"></i>
+                    </div>
+                    <div class="ts-facts-content" style="text-align: center;">
+                        <h2 class="ts-facts-num"><span class="counterUp" data-count="1000">0</span></h2>
+                        <h3 class="ts-facts-title">Hợp đồng</h3>
+                    </div>
+                </div>
+
+               
+
+            </div> <!-- Facts end -->
+        </div>
+        <!--/ Content row end -->
+    </div>
+    <!--/ Container end -->
+</section><!-- Facts end -->
+
+@{
+    if (Model.RecommendJobs != null && Model.RecommendJobs.Count > 0)
+    {
+       
+        <section style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;" id="project-area" class="project-area solid-bg">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-lg-12">
+                        <h2 class="section-title">Dự án</h2>
+                        <h3 class="section-sub-title">Dành cho bạn</h3>
+                    </div>
+                </div>
+                <!--/ Title row end -->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div style="width: 100%; max-height: 1000px; overflow-y: auto;" id="freelancer-list">
+                                @{
+                                    foreach (var i in Model.RecommendJobs)
+                                    {
+                                        <div data-job-type="@i.JobType" data-salary-type="@i.SalaryType" data-keyword="@(i.Name))" data-min-salary="@i.MinDeal" data-max-salary="@i.MaxDeal" class="freelancer-item" data-skill="@string.Join(",", i.Skills.Select(x => x.Id).ToList())" data-category="@i.Category.Id" style="display: flex; justify-content: space-between; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #fff; position: relative;">
+                                            <div style="display: flex; flex: 1;">
+
+                                                <div style="max-width: 600px; position: relative;">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div>
+                                                            <div style="display: flex; align-items: center;">
+                                                                <h4 style="margin: 0; font-size: 16px;">@i.Name</h4>
+                                                                <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                                    @{
+                                                                        // (int)((DateTime.Now - i.CreateDay)).TotalDays "ngày trước"
+                                                                        string resultDateTime = "";
+                                                                        var timeDifference = DateTime.Now - i.CreateDay;
+                                                                        if (timeDifference.TotalMinutes < 60)
+                                                                        {
+                                                                            // Nếu độ chênh lệch nhỏ hơn 1 giờ, hiển thị độ chênh lệch theo phút
+                                                                            resultDateTime = $"{(int)timeDifference.TotalMinutes} phút trước";
+                                                                        }
+                                                                        else if (timeDifference.TotalHours < 24)
+                                                                        {
+                                                                            // Nếu độ chênh lệch nhỏ hơn 24 giờ, hiển thị độ chênh lệch theo giờ
+                                                                            resultDateTime = $"{(int)timeDifference.TotalHours} giờ trước";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            // Nếu độ chênh lệch lớn hơn hoặc bằng 24 giờ, hiển thị độ chênh lệch theo ngày
+                                                                            resultDateTime = $"{(int)timeDifference.TotalDays} ngày trước";
+                                                                        }
+                                                                    }
+                                                                    @resultDateTime
+                                                                </span>
+                                                            </div>
+                                                            <div style="font-size: 12px; display: inline-block; margin-left: 10px;">@i.Category.Name</div>
+                                                            <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-calendar"></i> @(i.JobType == 1 ? "Ngắn hạn" : "Hằng ngày")</div>
+                                                            <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-calendar"></i> @(i.JobType == 1 ? "Ngắn hạn" : "Hằng ngày")</div>
+                                                            <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-money-bill"></i> @(i.SalaryType == 1 ? "Lương theo giờ" : i.SalaryType == 2 ? "Lương khi kết thúc dự án" : "Lương trả theo tháng")</div>
+                                                            <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-info-circle"></i> @(i.WorkType == 1 ? "Làm việc trực tuyến" : "Làm việc trực tiếp")</div>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <p style="font-size: 16px; margin: 10px 0;">@(Helper.CutString(HttpUtility.HtmlDecode(Regex.Replace(i.Description, "<.*?>", string.Empty))))</p>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+
+                                                        @{
+                                                            foreach (var j in i.Skills)
+                                                            {
+                                                                <span style="border-radius: 15px; padding: 5px 10px; background-color: #0078D4; color: #fff; font-size: 12px;">@j.Name</span>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @{
+                                                if (i.MaxDeal > 0)
+                                                {
+                                                    <div style="position: absolute; top: 15px; right: 15px; font-size: 20px; color: #555;">
+                                                        @($"{i.MinDeal:N0}đ - {i.MaxDeal:N0}đ")
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="position: absolute; top: 15px; right: 15px; font-size: 20px; color: #555;">
+                                                        @($"{i.MinDeal:N0}đ")
+                                                    </div>
+                                                }
+                                            }
+
+
+                                            <div style="display: flex; flex-direction: row; gap: 10px; position: absolute; bottom: 15px; right: 15px;">
+                                                <button style="padding: 8px 15px; background-color: #fff; color: #0078D4; border: solid;  border-width: 1px; border-radius: 5px; border-color: #0078D4; cursor: pointer;">Liên hệ</button>
+                                                <button style="padding: 8px 15px; background-color: #0078D4; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><a href="~/chi-tiet-du-an/@i.Id">Chi tiết</a></button>
+                                            </div>
+                                        </div>
+
+                                    }
+                                }
+                            </div>
+                        </div><!-- shuffle end -->
+                    </div>
+
+                </div><!-- Content row end -->
+            </div>
+            <!--/ Container end -->
+        </section>
+
+        <!-- Project area end -->
+    }
+}
+
+<section style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;" id="project-area" class="project-area solid-bg">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-12">
+                <h2 class="section-title">Dự án</h2>
+                <h3 class="section-sub-title">Được quan tâm nhiều</h3>
+            </div>
+        </div>
+        <!--/ Title row end -->
+
+        <div class="row">
+            <div class="col-12">
+
+
+                <div class="row">
+                    <div style="width: 100%; max-height: 1000px; overflow-y: auto;" id="freelancer-list">
+                        @{
+                            foreach (var i in Model.RecentViews)
+                            {
+                                <div data-job-type="@i.JobType" data-salary-type="@i.SalaryType" data-keyword="@(i.Name))" data-min-salary="@i.MinDeal" data-max-salary="@i.MaxDeal" class="freelancer-item" data-skill="@string.Join(",", i.Skills.Select(x => x.Id).ToList())" data-category="@i.Category.Id" style="display: flex; justify-content: space-between; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #fff; position: relative;">
+                                    <div style="display: flex; flex: 1;">
+
+                                        <div style="max-width: 600px; position: relative;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <h4 style="margin: 0; font-size: 16px;">@i.Name</h4>
+                                                        <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                            @{
+                                                                // (int)((DateTime.Now - i.CreateDay)).TotalDays "ngày trước"
+                                                                string resultDateTime = "";
+                                                                var timeDifference = DateTime.Now - i.CreateDay;
+                                                                if (timeDifference.TotalMinutes < 60)
+                                                                {
+                                                                    // Nếu độ chênh lệch nhỏ hơn 1 giờ, hiển thị độ chênh lệch theo phút
+                                                                    resultDateTime = $"{(int)timeDifference.TotalMinutes} phút trước";
+                                                                }
+                                                                else if (timeDifference.TotalHours < 24)
+                                                                {
+                                                                    // Nếu độ chênh lệch nhỏ hơn 24 giờ, hiển thị độ chênh lệch theo giờ
+                                                                    resultDateTime = $"{(int)timeDifference.TotalHours} giờ trước";
+                                                                }
+                                                                else
+                                                                {
+                                                                    // Nếu độ chênh lệch lớn hơn hoặc bằng 24 giờ, hiển thị độ chênh lệch theo ngày
+                                                                    resultDateTime = $"{(int)timeDifference.TotalDays} ngày trước";
+                                                                }
+                                                            }
+                                                            @resultDateTime
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-size: 12px; display: inline-block; margin-left: 10px;">@i.Category.Name</div>
+                                                    <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-calendar"></i> @(i.JobType == 1 ? "Ngắn hạn" : "Hằng ngày")</div>
+                                                    <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-calendar"></i> @(i.JobType == 1 ? "Ngắn hạn" : "Hằng ngày")</div>
+                                                    <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-money-bill"></i> @(i.SalaryType == 1 ? "Lương theo giờ" : i.SalaryType == 2 ? "Lương khi kết thúc dự án" : "Lương trả theo tháng")</div>
+                                                    <div style="font-size: 12px; display: inline-block; margin-left: 10px;">| <i class="fa fa-info-circle"></i> @(i.WorkType == 1 ? "Làm việc trực tuyến" : "Làm việc trực tiếp")</div>
+
+                                                </div>
+                                            </div>
+                                            <p style="font-size: 16px; margin: 10px 0;">@(Helper.CutString(HttpUtility.HtmlDecode(Regex.Replace(i.Description, "<.*?>", string.Empty))))</p>
+                                            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+
+                                                @{
+                                                    foreach (var j in i.Skills)
+                                                    {
+                                                        <span style="border-radius: 15px; padding: 5px 10px; background-color: #0078D4; color: #fff; font-size: 12px;">@j.Name</span>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @{
+                                        if (i.MaxDeal > 0)
+                                        {
+                                            <div style="position: absolute; top: 15px; right: 15px; font-size: 20px; color: #555;">
+                                                @($"{i.MinDeal:N0}đ - {i.MaxDeal:N0}đ")
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div style="position: absolute; top: 15px; right: 15px; font-size: 20px; color: #555;">
+                                                @($"{i.MinDeal:N0}đ")
+                                            </div>
+                                        }
+                                    }
+
+
+                                    <div style="display: flex; flex-direction: row; gap: 10px; position: absolute; bottom: 15px; right: 15px;">
+                                        <button style="padding: 8px 15px; background-color: #fff; color: #0078D4; border: solid;  border-width: 1px; border-radius: 5px; border-color: #0078D4; cursor: pointer;">Liên hệ</button>
+                                        <button style="padding: 8px 15px; background-color: #0078D4; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><a href="~/chi-tiet-du-an/@i.Id">Chi tiết</a></button>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                    </div>
+                </div><!-- shuffle end -->
+            </div>
+
+            <div class="col-12">
+                <div class="general-btn text-center">
+                    <a class="btn btn-primary" href="~/tim-du-an">Xem nhiều hơn</a>
+                </div>
+            </div>
+
+        </div><!-- Content row end -->
+    </div>
+    <!--/ Container end -->
+</section><!-- Project area end -->
+
+
+<section class="subscribe no-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="subscribe-call-to-acton">
+                    <h3>Hãy liên hệ chúng tôi</h3>
+                    <h4>(+84) 334290027</h4>
+                </div>
+            </div><!-- Col end -->
+
+            <div class="col-lg-8">
+                <div class="ts-newsletter row align-items-center">
+                    <div class="col-md-5 newsletter-introtext">
+                        <h4 class="text-white mb-0">Chúng tôi mang đến</h4>
+                        <p class="text-white">Những giải pháp tốt nhất</p>
+                    </div>
+                </div><!-- Newsletter end -->
+            </div><!-- Col end -->
+
+        </div><!-- Content row end -->
+    </div>
+</section>
+    
+
+
+<section id="news" class="news">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-12">
+                <h2 class="section-title">Freelancer</h2>
+                <h3 class="section-sub-title">Freelancer tiêu biểu</h3>
+            </div>
+        </div>
+        <!--/ Title row end -->
+
+        <div class="row">
+            @{
+                foreach(var i in Model.TopFreelancer)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div style="text-align: center" class="latest-post">
+                            <div class="latest-post-media">
+                                <a href="news-single.html" class="latest-post-img">
+                                    <img style="width: 350px; height: 250px" loading="lazy" class="img-fluid" src=@(i.ImageUrl != null && i.ImageUrl != ""? $"/Image/{i.ImageUrl}" : "/images/default-avatar.jpg") alt="img">
+                                </a>
+                            </div>
+                            <div class="post-body">
+                                <h4 class="post-title">
+                                    <a href="~/chi-tiet-freelancer/@i.Id" class="d-inline-block">@($"{i.LastName} {i.FirstName}") | @i.ReviewQuanlity <i class="fa fa-pen"></i> | @i.ContractQuanlity <i class="fa fa-file"></i></a>
+                                </h4>
+                                <div class="latest-post-meta">
+                                    <span class="post-item-date">
+                                        <i class="fa fa-clock-o"></i> @i.CreateDay.ToString("dd/MM/yyyy")
+                                    </span>
+                                </div>
+                            </div>
+                        </div><!-- Latest post end -->
+                    </div>
+
+                    <!-- 1st post col end -->
+                }
+            }
+
+        </div>
+        <!--/ Content row end -->
+
+        <div class="general-btn text-center mt-4">
+            <a class="btn btn-primary" href="~/freelancer">Xem nhiều hơn</a>
+        </div>
+
+    </div>
+    <!--/ Container end -->
+</section>
+<!--/ News end -->

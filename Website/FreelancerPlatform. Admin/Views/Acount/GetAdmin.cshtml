@@ -1,0 +1,151 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.SystemManagement.SystemManagementQuickViewModel>
+
+@{
+    ViewData["Title"] = "Tài khoản admin";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Quản trị viên</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h5 style="margin: 0;">Danh sách tài khoản</h5>
+            <!-- Nút thêm tài khoản nằm ở góc phải phía trên bảng -->
+            <a href="~/them-tai-khoan" style="padding: 8px 12px; text-decoration: none; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                Thêm tài khoản
+            </a>
+        </div>
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Tên tài khoản</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Số điện thoại</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Ngày tạo</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr>
+                            <td style="padding: 12px;">@i.UserName</td>
+                            <td style="padding: 12px;">@i.PhoneNumber</td>
+                            <td style="padding: 12px;">@i.CreateDay.ToString("dd/MM/yyyy")</td>
+                            <td id="container-btn-lock-@i.Id" style="padding: 12px;">
+                                @{
+                                    if (i.Status)
+                                    {
+                                        <button class="unlock" data-acount="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                            Mở
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="lock" data-acount="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                            Khóa
+                                        </button>
+                                    }
+                                }
+                                
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        lockAcount();
+        unLockAcount();
+        function lockAcount() {
+            $('body').on('click', '.lock', function (e) { // Thay đổi ở đây
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newAdmin = $(this).data("acount");
+
+                $.ajax({
+                    url: '/acount/lock', // Đảm bảo đường dẫn này là đúng
+                    type: 'POST',
+                    data: {
+                        adminId: newAdmin,
+                    },
+                    success: function (response) {
+                        showSuccess("Khóa tài khoản thành công");
+                        var container = document.getElementById(`container-btn-lock-${newAdmin}`);
+                        var html = `
+                                                     <button class="unlock" data-acount="${newAdmin}" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                            Mở
+                                        </button>
+                        `;
+                        container.innerHTML = html;
+                        lockAcount();
+                        unLockAcount();
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors;
+
+                        if (errors) {
+                            var error = errors[0]; // Nếu có ít nhất một lỗi
+
+                            var messages = error.errors;
+
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.'); // Xử lý lỗi không có phản hồi từ máy chủ
+                        }
+                    }
+                });
+            });
+        }
+        function unLockAcount() {
+            $('body').on('click', '.unlock', function (e) { // Thay đổi ở đây
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newAdmin = $(this).data("acount");
+
+                $.ajax({
+                    url: '/acount/lock', // Đảm bảo đường dẫn này là đúng
+                    type: 'POST',
+                    data: {
+                        adminId: newAdmin,
+                    },
+                    success: function (response) {
+                        showSuccess("Khóa tài khoản thành công");
+                        var container = document.getElementById(`container-btn-lock-${newAdmin}`);
+                        var html = `
+                                                                     <button class="lock" data-acount="${newAdmin}" style="padding: 5px 20px; width: 80px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                                    Khóa
+                                                </button>
+                                `;
+                        container.innerHTML = html;
+                        lockAcount();
+                        unLockAcount();
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors;
+
+                        if (errors) {
+                            var error = errors[0]; // Nếu có ít nhất một lỗi
+
+                            var messages = error.errors;
+
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.'); // Xử lý lỗi không có phản hồi từ máy chủ
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+}

@@ -1,0 +1,630 @@
+﻿@using FreelancerPlatform.Application.Extendsions
+@model Dictionary<FreelancerPlatform.Application.Dtos.Chat.KeyChatViewModel, List<FreelancerPlatform.Application.Dtos.Chat.ChatViewModel>>
+
+@{
+    ViewData["Title"] = "Tin nhắn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section inboxActive {
+    active
+}
+<input id="hub-chat" value="0" type="hidden" />
+<input id="freelancer-b" value="@ViewBag.FreelancerB" type="hidden"/>
+<input id="user-id" value="@User.GetUserId()" type="hidden" />
+<input id="image-url" value="@ViewBag.ImageUrl" type="hidden" />
+<input id="last-name" value="@ViewBag.LastName" type="hidden" />
+<input id="first-name" value="@ViewBag.FirstName" type="hidden" />
+
+
+<div class="chat-container" style="display: flex; width: 100%; height: calc(100vh - 170px); max-width: 1200px; margin: auto; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); border-radius: 10px; overflow: hidden;">
+
+    <!-- Danh sách các tiêu đề chat -->
+    <div id="list-title-chat" class="chat-list" style="width: 25%; background-color: #333; color: #fff; border-right: 1px solid #ddd; overflow-y: auto;">
+        
+        @{
+            foreach(var i in Model)
+            {
+                                                                                                <div class="chat-list-item" id="chat-title-@i.Key.HubChatId" style="padding: 20px; border-bottom: 1px solid #ddd; cursor: pointer; transition: background-color 0.3s;" onclick="showChat(@i.Key.HubChatId); $('#hub-chat').val(@i.Key.HubChatId); $('#freelancer-b').val(@(i.Key.FreelancerA != User.GetUserId() ? i.Key.FreelancerA : i.Key.FreelancerB))">
+                                                                                                <strong>@(i.Key.FreelancerA != User.GetUserId() ? $"{i.Key.LastNameA} {i.Key.FirstNameA}" : $"{i.Key.LastNameB} {i.Key.FirstNameB}")</strong>
+                        <span id="new-message-label-@i.Key.HubChatId">
+                                                                                                @{
+                        if ((User.GetUserId() == i.Key.FreelancerA && !i.Key.SeenFreelancerA) || (User.GetUserId() == i.Key.FreelancerB && !i.Key.SeenFreelancerB))
+                        {
+                                        <span style="background-color: red; color: white; font-size: 12px; font-weight: bold; margin-left: 10px; padding: 1px 8px; border-radius: 12px; display: inline-block;">Mới</span>
+                          
+                        }
+                        }
+                        </span>
+                                                                                                <br>
+                                                                                                </div>
+            }
+        }
+    </div>
+
+    <!-- Nội dung chat -->
+    <!-- Nội dung chat -->
+    <div class="chat-content" id="chatContent" style="width: 75%; padding: 30px; display: flex; flex-direction: column; background-color: #ffffff;">
+        <!-- Thanh avatar và nút "Tạo hợp đồng" -->
+        <div id="menu-title" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #ddd; margin-bottom: 20px;">
+            <!-- Avatar và tên -->
+            <div style="display: flex; align-items: center;">
+                <img id="title-avatar" src="avatar.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                <span id="title-name" style="font-weight: bold;">Nguyễn Văn A</span>
+            </div>
+
+            <!-- Nút "Tạo Hợp Đồng" -->
+            <button id="btn-create-contract" style="padding: 10px 20px; border: solid; border-width: 1px; border-color: #0078D4; background-color: #fff; color: #0078D4; border-radius: 5px; cursor: pointer;">Tạo Hợp Đồng</button>
+        </div>
+
+        <!-- Tin nhắn -->
+        <div id="messages" style="flex: 1; overflow-y: auto; margin-bottom: 20px;">
+            <!-- Tin nhắn sẽ được hiển thị ở đây -->
+        </div>
+
+        <!-- Khung nhập và gửi tin nhắn -->
+        <div id="container-input-message" style="display: flex; align-items: center;">
+            <input id="messageInput" type="text" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px;">
+            <button style="padding: 10px 20px; background-color: #0078D4; color: #fff; border: none; border-radius: 5px; cursor: pointer;" onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
+</div>
+<!--
+
+<script src="/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+
+-->
+
+
+<script type="text/javascript">
+    var chatData1 = {};
+    var titleChatData1 = {};
+    var chatUnSeen = [];
+    let currentChatId = null;
+    $('#container-input-message').hide(); //
+    $('#menu-title').hide();
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub")
+        .build();
+
+    connection.on("ReceiveMessage", function (senderName, hubChatId, message, timestamp, img, lastname, firstname) {
+        
+        var keys = Object.keys(chatData1);
+        if (keys.includes(hubChatId)) {
+            chatData1[hubChatId].push({ message: message, type: "received", timestamp: timestamp, image: img });
+    
+        }
+        if (!keys.includes(hubChatId)) {
+
+            $.ajax({
+                url: '/Inbox/ReloadChat',
+                type: 'POST',
+                success: function (response) {
+                    console.log('bat dau');
+                    console.log(response);
+
+                    var newChatData1 = {};
+                    var newTitleChatData1 = {};
+
+                    var userId = $('#user-id').val();
+                    for (var i in response) {
+                        // console.log(i.split("-"));
+                        // console.log(response[i]);
+
+                        /*var newChatData1 = {};
+                        var newTitleChatData1 = {};*/
+                        var keyOfChat = i.split("-");
+                        var key = keyOfChat[0];
+                        newTitleChatData1[key] = [`${keyOfChat[7]}`, `${keyOfChat[2]}`, `${keyOfChat[3]}`, `${keyOfChat[8]}`, `${keyOfChat[5]}`, `${keyOfChat[6]}`, `${keyOfChat[1]}`, `${keyOfChat[4]}`];
+
+                        newChatData1[key] = [];
+                        for (var j in response[i]) {
+                            let date = new Date(response[i][j].createDay);
+
+                            // Lấy các thành phần ngày, tháng, năm, giờ và phút
+                            let formattedDate = date.getFullYear() + '-' +
+                                ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                                ('0' + date.getDate()).slice(-2) + ' ' +
+                                ('0' + date.getHours()).slice(-2) + ':' +
+                                ('0' + date.getMinutes()).slice(-2);
+
+                            newChatData1[key].push({
+                                id: `${response[i][j].id}`, message: `${response[i][j].content}`, type: `${response[i][j].freelancerId == userId ? 'sent' : 'received'}`, timestamp: `${formattedDate}`, image: `${response[i][j].imageUrl}`, freelancerid: `${response[i][j].freelancerId}`
+                            });
+                        }
+
+                        if (!keys.includes(key)) {
+                            var container = document.getElementById('list-title-chat');
+
+                            // Sử dụng insertAdjacentHTML để thêm HTML vào DOM
+                            container.insertAdjacentHTML('beforeend', `
+                                    <div class="chat-list-item" id="chat-title-${keyOfChat[0]}" style="padding: 20px; border-bottom: 1px solid #ddd; cursor: pointer; transition: background-color 0.3s;"
+                                     onclick="showChat(${keyOfChat[0]});
+                                              $('#hub-chat').val(${keyOfChat[0]});
+                                              $('#freelancer-b').val(${keyOfChat[1] != userId ? keyOfChat[1] : keyOfChat[4]})">
+                                    <strong>${keyOfChat[1] != userId ? keyOfChat[2] + ' ' + keyOfChat[3] : keyOfChat[5] + ' ' + keyOfChat[6]}</strong><br>
+                                             <span id="new-message-label-${hubChatId}">
+                                            <span style="background-color: red; color: white; font-size: 12px; font-weight: bold; margin-left: 10px; padding: 1px 8px; border-radius: 12px; display: inline-block;">Mới</span>
+                                        </span>
+                                </div>
+                            `);
+                        }
+
+                        /*chatData1 = newChatData1;
+                        titleChatData1 = newTitleChatData1;
+                        chatUnSeen.push(hubChatId);*/
+                    }
+                    chatData1 = newChatData1;
+                    titleChatData1 = newTitleChatData1;
+                    chatUnSeen.push(hubChatId);
+                },
+                error: function (xhr, status, error) {
+                    showError('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                }
+            });
+        }
+        else {
+            if (currentChatId != hubChatId){
+                const labelNewChat = document.getElementById(`new-message-label-${hubChatId}`);
+                labelNewChat.innerHTML = ' <span style="background-color: red; color: white; font-size: 12px; font-weight: bold; margin-left: 10px; padding: 1px 8px; border-radius: 12px; display: inline-block;">Mới</span>';
+            }
+        }
+
+        
+        showChat(currentChatId);
+        
+
+
+
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+
+</script>
+
+<script>
+    // Dữ liệu giả lập cho nội dung chat
+   // function LoadChatData(Data)
+    //const chatData1 = {}
+    /*$(document).ready(function () {
+        $('#container-input-message').hide(); //
+        $('#menu-title').hide();
+
+    });*/
+    var chatInital = 0;
+    var idOfUser = $('#user-id').val();
+    @{
+        foreach(var hubChat in Model)
+        {
+                                    <text>
+                                        console.log('ok');
+                                        console.log(`@hubChat.Key.FreelancerA` + `@hubChat.Key.FreelancerB`);
+                                                                console.log(`@ViewBag.FreelancerA` + `@ViewBag.FreelancerB`);
+                                if ((`@hubChat.Key.FreelancerA` == `@ViewBag.FreelancerA` && `@hubChat.Key.FreelancerB` == `@ViewBag.FreelancerB`) || (`@hubChat.Key.FreelancerA` == `@ViewBag.FreelancerB` && `@hubChat.Key.FreelancerB` == `@ViewBag.FreelancerA`)) {
+                                console.log('hiong nhau');
+                                    chatInital = `@hubChat.Key.HubChatId`;
+                                    console.log(chatInital);
+                            }
+
+                    if ((idOfUser == '@hubChat.Key.FreelancerA' && @(!hubChat.Key.SeenFreelancerA ? "true" : "false")) ||
+                        (idOfUser == '@hubChat.Key.FreelancerB' && @(!hubChat.Key.SeenFreelancerB ? "true" : "false"))) {
+                        chatUnSeen.push('@hubChat.Key.HubChatId');
+                    }
+                           
+                                        </text>
+            var key = hubChat.Key.HubChatId;
+
+                                                                                                    <text>
+                                                                                                        var keyObject = @key;
+                                                                                                        chatData1[keyObject] = [];
+                                                titleChatData1[keyObject] = [`@hubChat.Key.ImageUrlA`, `@Html.Raw(hubChat.Key.LastNameA)`, `@Html.Raw(hubChat.Key.FirstNameA)`, `@Html.Raw(hubChat.Key.ImageUrlB)`, `@Html.Raw(hubChat.Key.LastNameB)`, `@Html.Raw(hubChat.Key.FirstNameB)`, `@hubChat.Key.FreelancerA`, `@hubChat.Key.FreelancerB`];
+                                                                                                    </text>
+            foreach(var chat in hubChat.Value)
+            {
+                                                                                                        <text>
+                                                                                                            chatData1[keyObject].push({
+                                                                                                        id: `@chat.Id`, message: `@Html.Raw(chat.Content)`, type: `@(chat.FreelancerId == User.GetUserId() ? "sent" : "received")`, timestamp: `@chat.CreateDay.ToString("yyyy-MM-dd HH:mm")`, image: `@chat.ImageUrl`, freelancerid: `@chat.FreelancerId`
+                                                                                                            });
+                                                                                            </text>
+    
+       
+    }
+        }
+
+        }
+        console.log('danh sach chua doc');
+    console.log(chatUnSeen);
+
+
+        console.log(titleChatData1);
+    //let currentChatId = null;
+    
+    if (chatInital != 0) {
+      
+        showChat(Number(chatInital));
+       
+    }
+
+    function showChat(chatId) {
+        
+        //$('#container-input-message').show();
+        //new-message-label-i.Key.HubChatId
+        const labelNewChat = document.getElementById(`new-message-label-${chatId}`);
+        labelNewChat.innerHTML = '';
+        currentChatId = chatId;
+       // $('#menu-title').show();
+
+
+        var freelancerb = $('#freelancer-b').val();
+        var freelancercurrent = $('#user-id').val();
+
+        $.ajax({
+            url: '/Inbox/UpdateAllSeenStatus',
+            type: 'POST',
+            data: {
+                id: chatId
+            },
+            success: function (response) {
+                $.ajax({
+                    url: '/Inbox/CheckChatCountUnSeen',
+                    type: 'POST',
+                    data: {
+                        id: freelancercurrent
+                    },
+                    success: function (response) {
+                        console.log('Lượng tin nhắn chưa đọc');
+                        console.log(response);
+
+                        // Thay đổi nội dung text của #chat-count
+                        if (response > 0){
+                            var containerChatCount = document.getElementById('container-chat-count');
+                            containerChatCount.innerHTML = `
+                                                               <span id="chat-count" style="background-color: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-block; text-align: center; font-size: 12px; line-height: 20px; position: relative; top: -10px; left: 5px;">
+                                                                            ${response}
+                                                               </span>`;
+                        }
+                        else{
+                            var containerChatCount = document.getElementById('container-chat-count');
+                            containerChatCount.innerHTML = ``;
+                        }
+                        //$('#chat-count').text(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+            }
+        });
+
+     
+        console.log('debug');
+        console.log(titleChatData1);
+        var img = (titleChatData1[currentChatId][6] != freelancercurrent) ? titleChatData1[currentChatId][0] : titleChatData1[currentChatId][3];
+       var title_img = (img == null || img == '') ? `/images/default-avatar.jpg` : `/Image/${img}`;
+
+
+        var title_name = (titleChatData1[currentChatId][6] != freelancercurrent) ? `${titleChatData1[currentChatId][1]} ${titleChatData1[currentChatId][2]}` : `${titleChatData1[currentChatId][4]} ${titleChatData1[currentChatId][5]}`;
+      
+       var titleImg = document.getElementById('title-avatar');
+       titleImg.src = title_img;
+
+       $('#title-name').text(title_name);
+       
+
+
+        const chatContentDiv = document.getElementById('messages');
+        chatContentDiv.innerHTML = ''; // Clear old content
+
+        // Reset the styles of all chat list items
+        document.querySelectorAll('.chat-list-item').forEach(item => {
+            item.style.backgroundColor = ''; // Reset background color
+            item.style.color = '#fff'; // Reset text color
+        });
+
+        const chatMessages = chatData1[chatId];
+        if (chatMessages) {
+            chatMessages.forEach(chat => {
+               
+                /*const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', chat.type); // Add class for the message
+                messageDiv.style.padding = '15px';
+                messageDiv.style.marginBottom = '10px';
+                messageDiv.style.maxWidth = '70%';
+                messageDiv.style.borderRadius = '8px';
+                messageDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                messageDiv.style.position = 'relative'; // Set position to relative for absolute positioning of timestamp
+
+                // Create a div for the message text
+                const messageText = document.createElement('div');
+                messageText.textContent = chat.message;
+                messageDiv.appendChild(messageText);
+
+                // Create a div for the timestamp
+                const timestampDiv = document.createElement('div');
+                timestampDiv.textContent = chat.timestamp;
+                timestampDiv.style.fontSize = 'smaller'; // Make the timestamp smaller
+                timestampDiv.style.color = '#999'; // Color for the timestamp
+
+                // Set positioning based on message type
+                if (chat.type === "sent") {
+                    timestampDiv.style.position = 'absolute'; // Position timestamp absolutely
+                    timestampDiv.style.bottom = '5px'; // Distance from the bottom
+                    timestampDiv.style.left = '10px'; // Distance from the left
+                } else {
+                    timestampDiv.style.position = 'absolute'; // Position timestamp absolutely
+                    timestampDiv.style.bottom = '5px'; // Distance from the bottom
+                    timestampDiv.style.right = '10px'; // Distance from the right
+                }
+
+                // Set the background color and text color based on the message type
+                if (chat.type === "sent") {
+                    messageDiv.style.backgroundColor = '#0078D4';
+                    messageDiv.style.color = '#fff';
+                    messageDiv.style.alignSelf = 'flex-end';
+                    messageDiv.style.textAlign = 'right';
+                    messageDiv.style.marginLeft = 'auto';
+                } else {
+                    messageDiv.style.backgroundColor = '#f2f2f2';
+                    messageDiv.style.alignSelf = 'flex-start';
+                    messageDiv.style.textAlign = 'left';
+                    messageDiv.style.marginRight = 'auto';
+                }
+
+                // Append the timestamp to the message div
+                messageDiv.appendChild(timestampDiv);
+                chatContentDiv.appendChild(messageDiv);*/
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', chat.type);
+                messageDiv.style.display = 'block';
+                messageDiv.style.alignItems = 'center';
+                messageDiv.style.padding = '15px';
+                messageDiv.style.marginBottom = '10px';
+                messageDiv.style.borderRadius = '8px';
+                messageDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                messageDiv.style.position = 'relative';
+                messageDiv.style.wordWrap = 'break-word';
+                messageDiv.style.maxWidth = 'fit-content';
+                messageDiv.style.minWidth = '180px';
+                messageDiv.style.cursor = 'pointer';
+                messageDiv.dataset.messageId = chat.id;
+
+                
+
+                // Create a div to wrap the text and timestamp
+                const messageContent = document.createElement('div');
+                messageContent.style.display = 'inline-block';
+                messageContent.style.wordWrap = 'break-word';
+                messageContent.style.maxWidth = '100%';
+                messageContent.style.paddingBottom = '10px';
+
+                // Create a div for the message text
+                const messageText = document.createElement('div');
+                messageText.textContent = chat.message;
+                messageContent.appendChild(messageText);
+
+                // Create a div for the timestamp
+                const timestampDiv = document.createElement('div');
+                timestampDiv.textContent = chat.timestamp;
+                timestampDiv.style.fontSize = 'smaller';
+                timestampDiv.style.color = '#999';
+
+                // Set positioning based on message type
+                if (chat.type === "sent") {
+                    timestampDiv.style.position = 'absolute';
+                    timestampDiv.style.bottom = '5px';
+                    timestampDiv.style.left = '10px';
+
+                    messageDiv.style.backgroundColor = '#0078D4';
+                    messageDiv.style.color = '#fff';
+                    messageDiv.style.textAlign = 'right';
+                    messageDiv.style.marginLeft = 'auto';
+                    messageDiv.style.marginRight = '0';
+                    messageContent.style.textAlign = 'left';
+
+                    messageDiv.appendChild(messageContent);
+
+
+
+                    // Create a "thu hồi" button (hidden by default)
+                    const recallButton = document.createElement('button');
+                    recallButton.textContent = 'Thu hồi'; // Button name
+                    recallButton.style.fontSize = '12px';
+                    recallButton.style.cursor = 'pointer';
+                    recallButton.style.display = 'none'; // Hidden by default
+                    recallButton.style.padding = '4px 8px';
+                    recallButton.style.backgroundColor = '#ff4d4d';
+                    recallButton.style.color = '#fff';
+                    recallButton.style.border = 'none';
+                    recallButton.style.borderRadius = '4px';
+
+                    let hideButtonTimeout; // Variable to hold the timeout ID
+
+                    // Function to show the recall button and set a timeout to hide it
+                    function showRecallButton() {
+                        recallButton.style.display = 'inline-block'; // Show the recall button when mouse is over
+                        clearTimeout(hideButtonTimeout); // Clear any existing timeout to hide the button
+                    }
+
+                    function hideRecallButton() {
+                        hideButtonTimeout = setTimeout(() => {
+                            recallButton.style.display = 'none'; // Hide the button after 1 second
+                        }, 1000);
+                    }
+
+                    // Add mouseover event to the message div to show the recall button
+                    messageDiv.addEventListener('mouseover', showRecallButton);
+
+                    // Add mouseout event to the message div to hide the recall button
+                    messageDiv.addEventListener('mouseout', hideRecallButton);
+
+                    // Keep the button visible while hovering over it
+                    recallButton.addEventListener('mouseover', showRecallButton);
+
+                    // Hide the button when mouse leaves the recall button
+                    recallButton.addEventListener('mouseout', hideRecallButton);
+
+                    // Add click event to recall button
+                    recallButton.addEventListener('click', function () {
+                        var messageId = messageDiv.dataset.messageId;
+                        //alert(messageId);
+                        $.ajax({
+                            url: '/Inbox/ReCallInbox',
+                            type: 'POST',
+                            data: {
+                                // hubChatId: $('#hub-chat').val(),
+                                id: messageId
+                            },
+                            success: function (response) {
+                                messageDiv.textContent = 'Đã thu hồi';
+                            },
+                            error: function (xhr, status, error) {
+                                showError('Lỗi hệ thống khi thu hồi, vui lòng thử lại!');
+                                console.log(error);
+                            }
+                        });
+
+                        //chatContentDiv.removeChild(messageDiv); // Remove the message from the DOM
+                    });
+
+                    // Position the recall button on the left of the message
+                    recallButton.style.position = 'absolute';
+                    recallButton.style.left = '-65px';
+                    recallButton.style.top = '50%';
+                    recallButton.style.transform = 'translateY(-50%)';
+
+                    // Append the recall button to the message div
+                    messageDiv.appendChild(recallButton);
+                } else {
+                    // Create avatar image
+                    const avatar = document.createElement('img');
+                    avatar.src = chat.image === '' || chat.image === null ? '/images/default-avatar.jpg' : `/Image/${chat.image}`;
+                    avatar.style.width = '40px';
+                    avatar.style.height = '40px';
+                    avatar.style.borderRadius = '50%';
+
+                    // Create the anchor tag
+                    const avatarLink = document.createElement('a');
+                    // Set the href attribute of the anchor tag to the desired link
+                    avatarLink.href = `chi-tiet-freelancer/${chat.freelancerid}`;
+
+                    // Append the avatar to the anchor tag
+                    avatarLink.appendChild(avatar);
+
+                    // Positioning of the timestamp
+                    timestampDiv.style.position = 'absolute';
+                    timestampDiv.style.bottom = '5px';
+                    timestampDiv.style.right = '10px';
+
+                    // Message div styles
+                    messageDiv.style.backgroundColor = '#f2f2f2';
+                    messageDiv.style.color = '#000';
+                    messageDiv.style.textAlign = 'left';
+                    messageDiv.style.marginRight = 'auto';
+                    messageDiv.style.marginLeft = '0';
+
+                    avatarLink.style.marginRight = '10px'; // Add margin to the link if needed
+
+                    // Append the avatar link to the message div
+                    messageDiv.appendChild(avatarLink);
+
+                    // Append the message content to the message div
+                    messageDiv.appendChild(messageContent);
+
+                    
+                }
+
+                // Append the timestamp to the message content
+                messageContent.appendChild(timestampDiv);
+
+               
+
+                if (chat.message == 'Đã thu hồi') {
+                    messageDiv.textContent = 'Đã thu hồi';
+                }
+
+                // Append the message div to the chat content div
+                chatContentDiv.appendChild(messageDiv);
+
+
+            });
+        }
+
+        chatContentDiv.scrollTop = chatContentDiv.scrollHeight;
+
+        $('.chat-list-item').css('background-color', '');
+
+        // Đặt màu nền cho thẻ div đã nhấn
+        $(`#chat-title-${currentChatId}`).css('background-color', '#0078D4');
+        $('#container-input-message').show();
+        $('#menu-title').show();
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const messageText = messageInput.value;
+        if (messageText.trim() !== '' && currentChatId !== null) {
+            const timestamp = new Date().toLocaleString(); // Get current timestamp
+            chatData1[currentChatId].push({ message: messageText, type: "sent", timestamp: timestamp });
+            showChat(currentChatId); // Refresh chat
+            messageInput.value = ''; // Clear input
+            var freelancerB = $('#freelancer-b').val();
+            var myImage = $('#image-url').val();
+            var lastName = $('#last-name').val();
+            var firstName = $('#first-name').val();
+
+            $.ajax({
+                url: '/Inbox/CreateChat',
+                type: 'POST',
+                data: {
+                    // hubChatId: $('#hub-chat').val(),
+                    content: messageText,
+                    freelancerA: @ViewBag.FreelancerA,
+                    freelancerB: $('#freelancer-b').val(),
+                },
+                success: function (response) {
+                    connection.invoke("SendMessageToUser", freelancerB, `${currentChatId}`, messageText, myImage, lastName, firstName).catch(function (err) {//SendMessageToUser
+                        return console.error(err.toString());
+                    });
+                },
+                error: function (xhr, status, error) {
+                    showError('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                    console.log(error);
+                }
+            });
+
+
+            /*connection.invoke("SendMessageToUser", freelancerB, `${currentChatId}`, messageText).catch(function (err) {//SendMessageToUser
+                return console.error(err.toString());
+            });*/
+
+            
+        }
+    }
+
+
+</script>
+
+
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            //$('#container-input-message').hide(); //
+            //$('#menu-title').hide();
+
+            $('#btn-create-contract').on('click', function () {
+                var createUser = $('#user-id').val();
+                var partner = $('#freelancer-b').val();
+               // alert(contract);
+                window.location.replace(`/tao-hop-dong/${createUser}/${partner}`);
+            });
+
+        });
+    </script>
+}

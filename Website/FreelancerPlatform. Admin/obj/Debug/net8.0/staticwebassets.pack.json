@@ -1,0 +1,69 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\FreelancerPlatform. Admin.bundle.scp.css",
+      "PackagePath": "staticwebassets\\FreelancerPlatform. Admin.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\assets\\demo\\chart-area-demo.js",
+      "PackagePath": "staticwebassets\\assets\\demo\\chart-area-demo.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\assets\\demo\\chart-bar-demo.js",
+      "PackagePath": "staticwebassets\\assets\\demo\\chart-bar-demo.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\assets\\demo\\chart-pie-demo.js",
+      "PackagePath": "staticwebassets\\assets\\demo\\chart-pie-demo.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\assets\\demo\\datatables-demo.js",
+      "PackagePath": "staticwebassets\\assets\\demo\\datatables-demo.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\assets\\img\\error-404-monochrome.svg",
+      "PackagePath": "staticwebassets\\assets\\img\\error-404-monochrome.svg"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\css\\notification.css",
+      "PackagePath": "staticwebassets\\css\\notification.css"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\css\\styles.css",
+      "PackagePath": "staticwebassets\\css\\styles.css"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\jQuery\\jquery.min.js",
+      "PackagePath": "staticwebassets\\jQuery\\jquery.min.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\js\\datatables-simple-demo.js",
+      "PackagePath": "staticwebassets\\js\\datatables-simple-demo.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\js\\notification.js",
+      "PackagePath": "staticwebassets\\js\\notification.js"
+    },
+    {
+      "Id": "D:\\Luan van\\src1\\FreelancerPlatform\\FreelancerPlatform. Admin\\wwwroot\\js\\scripts.js",
+      "PackagePath": "staticwebassets\\js\\scripts.js"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.FreelancerPlatform. Admin.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.FreelancerPlatform. Admin.props",
+      "PackagePath": "build\\FreelancerPlatform. Admin.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.FreelancerPlatform. Admin.props",
+      "PackagePath": "buildMultiTargeting\\FreelancerPlatform. Admin.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.FreelancerPlatform. Admin.props",
+      "PackagePath": "buildTransitive\\FreelancerPlatform. Admin.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

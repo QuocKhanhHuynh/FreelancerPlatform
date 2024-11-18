@@ -1,0 +1,85 @@
+﻿@model FreelancerPlatform.Application.Dtos.Freelancer.FreelancerViewModel
+
+@{
+    ViewData["Title"] = "Cập Nhật Thông Tin Thanh Toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1 style="font-size: 24px; margin-bottom: 20px; text-align: center;">Cập Nhật Thông Tin Thanh Toán</h1>
+
+    <form id="payment-update-form">
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="bank-name" style="font-size: 18px;">Chọn Ngân Hàng:</label>
+            <select id="bank-name" name="bank-name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="">-- Chọn Ngân Hàng --</option>
+                @{
+                    foreach(var i in ViewBag.Banks)
+                    {
+                                <option value="@i.Id" selected="@(i.Id == Model.BankName)">@i.Name</option>
+                    }
+                }
+                <!-- Thêm các ngân hàng khác nếu cần -->
+            </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="bank-account" style="font-size: 18px;">Số Tài Khoản Ngân Hàng:</label>
+            <input value="@Model.BankNumber" type="text" id="bank-number" name="bank-account" placeholder="Nhập số tài khoản ngân hàng"
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <div class="form-group" style="text-align: center; margin-top: 30px;">
+            <button type="submit" id="submit-btn-payment" style="background-color: #0078D4; color: white; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Lưu Lại</button>
+            <button type="button" id="verify-btn" style="background-color: #fff; color: #0078D4; border: solid 1px #0078D4; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">Yêu Cầu Xác Thực</button>
+        </div>
+    </form>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '#submit-btn-payment', function (e) {
+                e.preventDefault(); // Prevent the default button click behavior
+
+                const newBankName = $('#bank-name').val();
+                const newBankNumber = $('#bank-number').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '/chinh-thong-tin-thanh-toan',
+                    data: {
+                        bankName: newBankName,
+                        bankNumber: newBankNumber
+                    },
+                    success: function (res) {
+                        showSuccess("Cập nhật thông tin thanh toán thành công");
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        var errors = err.responseJSON.errors;
+
+                        // Check if errors exist
+                        if (errors && errors.length > 0) {
+                            var error = errors[0];
+                            var messages = error.errors;
+
+                            // Check if messages exist and display the appropriate error message
+                            if (messages && messages.length > 0) {
+                                if (messages.length > 1) {
+                                    showError(messages[messages.length - 1]);
+                                } else {
+                                    showError(messages[0]);
+                                }
+                            } else {
+                                showError('Lỗi không xác định.'); // Fallback error message
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.'); // General error message
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

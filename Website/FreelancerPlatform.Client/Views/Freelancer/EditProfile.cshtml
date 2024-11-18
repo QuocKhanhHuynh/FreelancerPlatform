@@ -1,0 +1,394 @@
+﻿@model FreelancerPlatform.Application.Dtos.Freelancer.FreelancerUpdateRequest
+
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ Sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input type="hidden" id="isUpdateAvatar" value="0" />
+<input type="hidden" value="@ViewBag.CategoryJson" id="categories" />
+<input type="hidden" value="@ViewBag.SkillJson" id="skills" />
+<input type="hidden" value="@ViewBag.CategoryOfFreelancerJson" id="CategoryOfFreelancer" />
+<input type="hidden" value="@ViewBag.SkillOfFreelancerJson" id="SkillOfFreelancer" />
+
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <h1 style="font-size: 24px; margin-bottom: 20px;">Chỉnh sửa Hồ Sơ</h1>
+
+    <div id="container-edit-avatar" class="avatar-section" style="display: flex; align-items: center; margin-bottom: 20px;">
+        @{
+            if (Model.ImageUrl != null && Model.ImageUrl != "")
+            {
+                                                    <img id="avarta-img" src="/Image/@Model.ImageUrl" alt="Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                                                    <div>
+                                                    <button id="remove-avatar-btn-edit" class="remove-avatar-btn" style="background-color: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 16px; cursor: pointer;">Gỡ</button>
+                                                    </div>
+            }
+            else
+            {
+                                                    <img src="/images/default-avatar.jpg" alt="Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                                                    <div>
+                                                        <input type="file" id="upload-avatar-edit" accept="image/*" style="margin-top: 10px;">
+                                                    </div>
+            }
+        }
+        
+    </div>
+
+    <div class="form-section" style="margin-bottom: 20px;">
+        <label for="first-name" style="font-size: 18px;">Họ và tên:</label>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input value="@Model.LastName" type="text" id="last-name" placeholder="Nhập họ" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <input value="@Model.FirstName" type="text" id="first-name" placeholder="Nhập tên" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <div class="form-section" style="margin-bottom: 20px;">
+            <label for="hourly-rate" style="font-size: 18px;">Mức lương làm việc trên giờ:</label>
+            <input value="@Model.RateHour" type="text" id="hourly-rate" placeholder="Nhập mức lương trên giờ (VND)" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <label for="bio" style="font-size: 18px;">Thông tin giới thiệu:</label>
+        <textarea id="bio" name="bio" rows="4" placeholder="Nhập thông tin giới thiệu" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.About</textarea>
+        <label for="experience"  style="font-size: 18px;">Kinh nghiệm:</label>
+        <textarea id="experience" name="experience" rows="4" placeholder="Nhập thông tin kinh nghiệm" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Experience</textarea>
+        <label for="education" style="font-size: 18px;">Học vấn:</label>
+        <textarea id="education" name="education" rows="4" placeholder="Nhập thông tin học vấn" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Education</textarea>
+        <label for="certification" style="font-size: 18px;">Chứng chỉ:</label>
+        <textarea id="certification" name="certification" rows="4" placeholder="Nhập thông tin chứng chỉ" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Certification</textarea>
+        <label for="archive" style="font-size: 18px;">Thành tựu:</label>
+        <textarea id="archive" name="archive" rows="4" placeholder="Nhập thông tin thành tựu" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Archive</textarea>
+
+
+    </div>
+
+
+    <div class="field-section" style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; margin-bottom: 10px;">Lĩnh vực hoạt động</h2>
+        <div style="display: flex; gap: 20px;">
+            <div class="dropdown-area" style="flex: 1;">
+                <label for="activity-field" style="font-size: 18px;">Chọn lĩnh vực:</label>
+                <select id="activity-field" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="0">-- Chọn lĩnh vực --</option>
+                    @{
+                        foreach (var i in ViewBag.Categories)
+                        {
+                                                            <option value="@i.Id">@i.Name</option>
+                        }
+                    }
+                </select>
+                <button id="add-field" style="background-color: #007bff; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; font-size: 16px; cursor: pointer;">Thêm lĩnh vực</button>
+            </div>
+            <div class="selected-fields" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                <h3 style="font-size: 18px;">Các lĩnh vực đã chọn:</h3>
+                <ul id="category-list" class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                    @{
+                        foreach(var i in ViewBag.CategoryOfFreelancer)
+                        {
+                                                           <li style="margin: 5px">
+                                                                <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                                                                    @i.Name
+                                    <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                                                                </span>
+                                                           </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="skills-section" style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng</h2>
+        <div style="display: flex; gap: 20px;">
+            <div class="dropdown-area" style="flex: 1;">
+                <label for="skill" style="font-size: 18px;">Chọn kỹ năng:</label>
+                <select id="skill" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="0">-- Chọn kỹ năng --</option>
+                    
+                    @{
+                        foreach(var i in ViewBag.Skills)
+                        {
+                                                            <option value="@i.Id">@i.Name</option>
+                        }
+                    }
+                </select>
+                <button id="add-skill" style="background-color: #007bff; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 16px; cursor: pointer;">Thêm kỹ năng</button>
+            </div>
+            <div class="selected-skills" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                <h3 style="font-size: 18px;">Các kỹ năng đã chọn:</h3>
+                <ul id="skill-list" class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+
+                    @{
+                        foreach (var i in ViewBag.SkillOfFreelancer)
+                        {
+                                                    <li style="margin: 5px">
+                                                        <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                                                            @i.Name
+                                    <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                                                        </span>
+                                                    </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="submit-section" style="text-align: center;">
+        <button id="submit-btn-edit" class="submit-btn" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Lưu Thay Đổi</button>
+    </div>
+</div>
+
+<script>
+    
+
+    document.getElementById('add-field').addEventListener('click', function () {
+        const dropdown = document.getElementById('activity-field');
+        const selectedValue = dropdown.options[dropdown.selectedIndex].text;
+        const selectedValueIndex = dropdown.options[dropdown.selectedIndex].value;
+
+        if (selectedValue && selectedValueIndex != 0) {
+            const existingFields = document.querySelectorAll('.selected-fields .skills-list li span');
+            let isDuplicate = false;
+            existingFields.forEach(field => {
+               
+                if (field.textContent.trim() === selectedValue) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (!isDuplicate) {
+                const li = document.createElement('li');
+                li.style.margin = '5px';
+                li.innerHTML = `
+                        <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                        ${selectedValue}
+                                <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                    </span>`;
+
+                // Thêm sự kiện xóa cho icon dấu X
+                li.querySelector('.remove-skill').addEventListener('click', function () {
+                    li.remove();
+                });
+
+                document.querySelector('.selected-fields .skills-list').appendChild(li);
+            }
+
+            dropdown.selectedIndex = 0; // Reset dropdown
+        }
+    });
+
+    document.getElementById('add-skill').addEventListener('click', function () {
+        const dropdown = document.getElementById('skill');
+        const selectedValue = dropdown.options[dropdown.selectedIndex].text;
+        const selectedValueIndex = dropdown.options[dropdown.selectedIndex].value;
+
+        if (selectedValue && selectedValueIndex != 0) {
+            const existingSkills = document.querySelectorAll('.selected-skills .skills-list li span');
+            let isDuplicate = false;
+            existingSkills.forEach(skill => {
+                if (skill.textContent.trim() === selectedValue) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (!isDuplicate) {
+                const li = document.createElement('li');
+                li.style.margin = '5px';
+                li.innerHTML = `
+                        <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                        ${selectedValue}
+                            <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                    </span>`;
+
+                // Thêm sự kiện xóa cho icon dấu X
+                li.querySelector('.remove-skill').addEventListener('click', function () {
+                    li.remove();
+                });
+
+                document.querySelector('.selected-skills .skills-list').appendChild(li);
+            }
+
+            dropdown.selectedIndex = 0; // Reset dropdown
+        }
+    });
+
+
+</script>
+
+@section script{
+    <script>
+        $(document).ready(function () {
+
+            CKEDITOR.replace('bio');
+            CKEDITOR.replace('experience');
+            CKEDITOR.replace('education');
+            CKEDITOR.replace('certification');
+            CKEDITOR.replace('archive');
+
+            $('.remove-skill').on('click', function () {
+                $(this).closest('li').remove(); // Tìm thẻ li chứa icon và xóa nó
+            });
+
+            $('body').on('change', '#upload-avatar-edit', function (e) {
+
+                $('#isUpdateAvatar').val(1);
+
+            });
+
+            $('body').on('click', '#remove-avatar-btn-edit', function (e) {
+
+                $('#isUpdateAvatar').val(2);
+                //var img = document.getElementById('avarta-img');
+                //img.src = '/images/default-avatar.jpg';
+                var containerImage = document.getElementById('container-edit-avatar');
+                containerImage.innerHTML = `
+                                                    <img src="/images/default-avatar.jpg" alt="Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                                                        <div>
+                                                            <input type="file" id="upload-avatar-edit" accept="image/*" style="margin-top: 10px;">
+                                                        </div>
+                                        `;
+
+            });
+
+            $('#hourly-rate').on('input', function () {
+                formatCurrency(this);
+            });
+
+            $('body').on('click', '#submit-btn-edit', function (e) {
+
+                var isUpdateAvatar =  $('#isUpdateAvatar').val();
+
+                let newImage = null;
+                if (isUpdateAvatar == 2) {
+                    newImage = '';
+                }
+                if (isUpdateAvatar == 1) {
+                    newImage = $('#upload-avatar-edit')[0].files[0];
+                }
+
+
+                const categoryFields = [];
+                $('#category-list').each(function () {
+                    let fieldCategoryName = $(this).find('span').text().trim();
+                    fieldCategoryName = fieldCategoryName.replace(/\s*\u00D7\s*$/, '');
+                    categoryFields.push(fieldCategoryName);
+                });
+                var newCaregoires = categoryFields[0].split('\n');
+
+                for (var i = 0; i < newCaregoires.length; i++) {
+                    newCaregoires[i] = newCaregoires[i].trim();
+                }
+                newCaregoires = newCaregoires.filter(item => item !== '');
+
+                const skillFields = [];
+                $('#skill-list').each(function () {
+                    let fieldSkillName = $(this).find('span').text().trim();
+                    fieldSkillName = fieldSkillName.replace(/\s*\u00D7\s*$/, '');
+                    skillFields.push(fieldSkillName);
+                });
+
+                var newSkills = skillFields[0].split('\n');
+
+                for (var i = 0; i < newSkills.length; i++) {
+                    newSkills[i] = newSkills[i].trim();
+                }
+                newSkills = newSkills.filter(item => item !== '');
+
+                var newCategoryIds = [];
+                var newSkillIds = [];
+
+                var categories = JSON.parse($('#categories').val());
+                var skills = JSON.parse($('#skills').val());
+
+                for (var i = 0; i < newCaregoires.length; i++) {
+                    for (var j = 0; j < categories.length; j++) {
+                        if (newCaregoires[i] == categories[j].Name) {
+                            newCategoryIds.push(categories[j].Id);
+                        }
+                    }
+                }
+                for (var i = 0; i < newSkills.length; i++) {
+                    for (var j = 0; j < skills.length; j++) {
+                        if (newSkills[i] == skills[j].Name) {
+                            newSkillIds.push(skills[j].Id);
+                        }
+                    }
+                }
+
+                console.log(newCategoryIds);
+                console.log(newSkillIds);
+
+                const newFirstName = $('#last-name').val();
+                const newLastName = $('#first-name').val();
+                const newAbout = CKEDITOR.instances.bio.getData();
+                const newRateHour = $('#hourly-rate').val();
+                const newExperience = CKEDITOR.instances.experience.getData();
+                const newEducation = CKEDITOR.instances.education.getData();
+                const newCertification = CKEDITOR.instances.certification.getData();
+                const newArchive = CKEDITOR.instances.archive.getData();
+
+
+                const formData = new FormData();
+                formData.append('imageUrl', newImage);
+                formData.append('lastName', newFirstName);
+                formData.append('firstName', newLastName);
+                formData.append('about', newAbout);
+                formData.append('rateHour', convertFormatCurrencyToNumber(newRateHour));
+                formData.append('experience', newExperience);
+                formData.append('education', newEducation);
+                formData.append('certification', newCertification);
+                formData.append('archive', newArchive);
+
+                for (var i in newCategoryIds){
+                    formData.append('categoryIds', newCategoryIds[i]);
+                }
+                for (var i in newSkillIds) {
+                    formData.append('skillIds', newSkillIds[i]);
+                }
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/chinh-ho-so',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        showSuccess("Cập nhật thông tin thành công");
+                        // img = document.getElementById('avarta-img');
+                        //img.src = '/Image/' + newImage.name;
+
+                        if (isUpdateAvatar == 1) {
+                            var containerImage = document.getElementById('container-edit-avatar');
+                            containerImage.innerHTML = `
+                                                                                                                                   <img id="avarta-img" src="/Image/${newImage.name}" alt="Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                                                                <div>
+                                                                <button id="remove-avatar-btn-edit" class="remove-avatar-btn" style="background-color: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 16px; cursor: pointer;">Gỡ</button>
+                                                                </div>
+                                                        `;
+                        }
+
+                       
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+
+
+
+        });
+    </script>
+}

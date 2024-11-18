@@ -1,0 +1,316 @@
+﻿@model FreelancerPlatform.Application.Dtos.Job.JobUpdateRequest
+@{
+    ViewData["Title"] = "Sửa dự án";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input type="hidden" value="@ViewBag.SkillJson" id="skills" />
+<input type="hidden" value="@Model.Id" id="job-id" />
+
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <h1 style="font-size: 24px; margin-bottom: 20px;">Tạo dự án</h1>
+
+
+    <div class="form-section" style="margin-bottom: 20px;">
+        <div class="form-section" style="margin-bottom: 20px;">
+            <label for="hourly-rate" style="font-size: 18px;">Tên dự án:</label>
+            <input value="@Model.Name" type="text" id="job-name" placeholder="Nhập tên dự án" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <div class="form-section" style="margin-bottom: 20px;">
+            <label for="hourly-rate" style="font-size: 18px;">Lĩnh vực công việc:</label>
+            <select type="text" id="job-category" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="0">-- Chọn lĩnh vực công việc --</option>
+                @{
+                    foreach (var i in ViewBag.Categories)
+                    {
+                                            <option value="@i.Id" selected="@(Model.CategoryId == i.Id? true : false)">@i.Name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <label for="first-name" style="font-size: 18px;">Hình thức công việc:</label>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select id="job-type" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="0">-- Chọn hình thức công việc --</option>
+                <option value="1" selected="@(Model.JobType == 1? true : false)">Công việc ngắn hạn</option>
+                <option value="2" selected="@(Model.JobType == 2? true : false)">Công việc thường xuyên</option>
+            </select>
+            <select id="job-work-type" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="@null">-- Chọn hình thức làm việc --</option>
+                <option value="1" selected="@(Model.WorkType == 1? true : false)">Làm việc trực tuyến</option>
+                <option value="2" selected="@(Model.WorkType == 2? true : false)" >Làm việc trực tiếp</option>
+
+            </select>
+            <select id="job-salary-type" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="0">-- Chọn hình thức trả lương --</option>
+                <option value="1" selected="@(Model.SalaryType == 1? true : false)">Trả theo giờ</option>
+                <option value="2" selected="@(Model.SalaryType == 3? true : false)">Trả sau theo tháng</option>
+                <option value="2" selected="@(Model.SalaryType == 2? true : false)">Trả sau khi kết thúc công việc</option>
+            </select>
+        </div>
+
+        <label for="first-name" style="font-size: 18px;">Mức lương:</label>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input value="@Model.MinDeal" type="text" id="job-min-salary" placeholder="Nhập mức tối thiểu" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <input value="@(Model.MaxDeal > 0 ? Model.MaxDeal : null)" type="text" id="job-max-salary" placeholder="Nhập mức tối đa" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <div id="estimated-completion" class="form-section" style="margin-bottom: 20px;">
+            <label for="label_estimated-completion" style="font-size: 18px;">Số giờ dự kiến hoàn thành:</label>
+            <input value="@Model.EstimatedCompletion" type="text" id="job-estimated-completion" placeholder="Nhập số giờ dự kiến hoàn thành" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+         <div id="hour-per-day" class="form-section" style="margin-bottom: 20px;">
+            <label for="label_hour_per_day" style="font-size: 18px;">Số giờ làm trên ngày:</label>
+            <input value="@Model.HourPerDay" type="text" id="job-hour-per-day" placeholder="Nhập số giờ làm một ngày" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+
+        <label for="bio" style="font-size: 18px;">Mô tả dự án:</label>
+        <textarea id="job_description" name="job_description" rows="4" placeholder="Nhập thông tin giới thiệu" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Description</textarea>
+        <label for="job_requirement" style="font-size: 18px;">Thông tin yêu cầu:</label>
+        <textarea id="job_requirement" name="job_requirement" rows="4" placeholder="Nhập thông tin yêu cầu" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Requirement</textarea>
+    </div>
+
+    <div class="skills-section" style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng yêu cầu</h2>
+        <div style="display: flex; gap: 20px;">
+            <div class="dropdown-area" style="flex: 1;">
+                <label for="skill" style="font-size: 18px;">Chọn kỹ năng:</label>
+                <select id="skill" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="0">-- Chọn kỹ năng --</option>
+                    @{
+                        foreach (var i in ViewBag.Skills)
+                        {
+                                                <option value="@i.Id">@i.Name</option>
+                        }
+                    }
+                </select>
+                <button id="add-skill" style="background-color: #007bff; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 16px; cursor: pointer;">Thêm kỹ năng</button>
+            </div>
+            <div class="selected-skills" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                <h3 style="font-size: 18px;">Các kỹ năng đã chọn:</h3>
+                <ul id="skill-list" class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                    @{
+                        foreach (var i in ViewBag.SkillOfJob)
+                        {
+                                                <li style="margin: 5px">
+                                                    <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                                                        @i.Name
+                                                        <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                                                    </span>
+                                                </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="submit-section" style="text-align: center;">
+        <button id="submit-btn-job" class="submit-btn" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Lưu lại</button>
+    </div>
+</div>
+<script>
+
+    document.getElementById('add-skill').addEventListener('click', function () {
+        const dropdown = document.getElementById('skill');
+        const selectedValue = dropdown.options[dropdown.selectedIndex].text;
+        const selectedValueIndex = dropdown.options[dropdown.selectedIndex].value;
+
+        if (selectedValue && selectedValueIndex != 0) {
+            const existingSkills = document.querySelectorAll('.selected-skills .skills-list li span');
+            let isDuplicate = false;
+            existingSkills.forEach(skill => {
+                if (skill.textContent.trim() === selectedValue) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (!isDuplicate) {
+                const li = document.createElement('li');
+                li.style.margin = '5px';
+                li.innerHTML = `
+                                <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px; position: relative; display: inline-block;">
+                                ${selectedValue}
+                                    <i class="fas fa-times remove-skill" style="position: absolute; top: -5px; right: -5px; cursor: pointer; color: #333;"></i>
+                            </span>`;
+
+                // Thêm sự kiện xóa cho icon dấu X
+                li.querySelector('.remove-skill').addEventListener('click', function () {
+                    li.remove();
+                });
+
+                document.querySelector('.selected-skills .skills-list').appendChild(li);
+            }
+
+            dropdown.selectedIndex = 0; // Reset dropdown
+        }
+    });
+
+
+</script>
+
+@section script{
+    <script>
+        $(document).ready(function () {
+            CKEDITOR.replace('job_description');
+            
+            CKEDITOR.replace('job_requirement');
+
+            var salaryType = $('#job-salary-type').val();
+            var jobType = $('#job-type').val();
+            var jobMinSalary = $('#job-min-salary').val();
+            var jobMaxSalary = $('#job-max-salary').val();
+            /*if (jobMinSalary != '') {
+               // alert(formatCurrency($('#job-min-salary').val()));
+                $('#job-min-salary').val(formatCurrency($('#job-min-salary').val()));
+            }
+            if (jobMaxSalary != '') {
+                $('#job-max-salary').val(formatCurrency($('#job-max-salary').val()));
+            }*/
+            if (salaryType == 1 && jobType == 1) {
+                $('#estimated-completion').show();
+                $('#hour-per-day').hide();
+            }
+            else if (salaryType == 1 && jobType == 2) {
+                $('#estimated-completion').hide();
+                $('#hour-per-day').show();
+            }
+            else {
+                $('#estimated-completion').hide();
+                $('#hour-per-day').hide();
+            }
+
+            $('#job-min-salary').on('input', function () {
+                formatCurrency(this);
+            });
+
+            $('#job-max-salary').on('input', function () {
+                formatCurrency(this);
+            });
+
+            $('#job-salary-type, #job-type').on('change', function () {
+                var salaryType = $('#job-salary-type').val();
+                var jobType = $('#job-type').val();
+                if (salaryType == 1 && jobType == 1) {
+                    $('#estimated-completion').show();
+                    $('#hour-per-day').hide();
+                    $('#job-hour-per-day').val(null);
+                }
+                else if (salaryType == 1 && jobType == 2) {
+                    $('#estimated-completion').hide();
+                    $('#hour-per-day').show();
+                    $('#job-estimated-completion').val(null);
+                }
+                else {
+                    $('#estimated-completion').hide();
+                    $('#hour-per-day').hide();
+                    $('#job-estimated-completion').val(null);
+                    $('#job-hour-per-day').val(null);
+                }
+            });
+
+            $('#job-salary-type').on('change', function () {
+                var type = $('#job-salary-type').val();
+                if (type == 1) {
+                    $('#estimated-completion').show();
+                }
+                else {
+                    $('#estimated-completion').hide();
+                }
+            });
+
+            $('.remove-skill').on('click', function () {
+                $(this).closest('li').remove(); // Tìm thẻ li chứa icon và xóa nó
+            });
+
+            $('body').on('click', '#submit-btn-job', function (e) {
+                const skillFields = [];
+                $('#skill-list').each(function () {
+                    let fieldSkillName = $(this).find('span').text().trim();
+                    fieldSkillName = fieldSkillName.replace(/\s*\u00D7\s*$/, '');
+                    skillFields.push(fieldSkillName);
+                });
+
+                var newSkills = skillFields[0].split('\n');
+                var skills = JSON.parse($('#skills').val());
+
+                for (var i = 0; i < newSkills.length; i++) {
+                    newSkills[i] = newSkills[i].trim();
+                }
+                newSkills = newSkills.filter(item => item !== '');
+
+                var newSkillIds = [];
+
+                for (var i = 0; i < newSkills.length; i++) {
+                    for (var j = 0; j < skills.length; j++) {
+                        if (newSkills[i] == skills[j].Name) {
+                            newSkillIds.push(skills[j].Id);
+                        }
+                    }
+                }
+
+                const newJobName = $('#job-name').val();
+                const newJobCategory = $('#job-category').val();
+                const newJobMinSalary = $('#job-min-salary').val();
+                const newJobMaxSalary = $('#job-max-salary').val();
+                const newJobType = $('#job-type').val();
+                const newJobSalaryType = $('#job-salary-type').val();
+                const newJobWorkType = $('#job-work-type').val();
+                const newJobDescription = CKEDITOR.instances.job_description.getData();
+                const newJobId = $('#job-id').val();
+                const newJobRequirement = CKEDITOR.instances.job_requirement.getData();
+                var newEstimatedCompletion = null;
+                var newHourPerDay = null;
+
+                if (newJobType == 1 && newJobSalaryType == 1) {
+                    newEstimatedCompletion = $('#job-estimated-completion').val();
+                }
+                else if (newJobType == 1 && newJobSalaryType == 2) {
+                    newHourPerDay = $('#job-hour-per-day').val();
+                }
+                //alert('ok');
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Job/EditJob',
+                    data: {
+                        id: newJobId,
+                        name: newJobName,
+                        description: newJobDescription,
+                        minDeal: convertFormatCurrencyToNumber(newJobMinSalary),
+                        maxDeal: convertFormatCurrencyToNumber(newJobMaxSalary) != 0 ? convertFormatCurrencyToNumber(newJobMaxSalary) : null,
+                        jobType: newJobType,
+                        salaryType: newJobSalaryType,
+                        categoryId: newJobCategory,
+                        skills: newSkillIds,
+                        requirement: newJobRequirement,
+                        estimatedCompletion: newEstimatedCompletion,
+                        hourPerDay: newHourPerDay,
+                        workType: newJobWorkType
+                    },
+                    success: function (res) {
+                        showSuccess("Sửa dự án thành công");
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+}

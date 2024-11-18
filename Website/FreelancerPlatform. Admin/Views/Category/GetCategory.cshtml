@@ -1,0 +1,89 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Category.CategoryQuickViewModel>
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration _configuration
+
+@{
+    ViewData["Title"] = "Tài khoản admin";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Quản trị viên</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h5 style="margin: 0;">Danh sách lĩnh vực</h5>
+            <a href="~/them-linh-vuc" style="padding: 8px 12px; text-decoration: none; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                Thêm lĩnh vực
+            </a>
+        </div>
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Ảnh</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã lĩnh vực</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Tên lĩnh vực</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr id="container-category-@i.Id">
+                            <td style="padding: 12px;">
+                                <img src=@($"{_configuration["ImageCloud"]}/Image/{i.ImageUrl}") alt="Ảnh lĩnh vực" style="width: 100px; height: 70px; object-fit: cover; border-radius: 5px;">
+                            </td>
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.Name</td>
+                            <td style="padding: 12px;">
+                                <button class="update-category" data-category="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Sửa
+                                </button>
+                                <button class="delete-category" data-category="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '.update-category', function (e) {
+                var id = $(this).data('category');
+                window.location.replace(`sua-linh-vuc/${id}`);
+            });
+
+            $('body').on('click', '.detele-category', function (e) {
+               // alert('ok');
+                e.preventDefault();
+                const newId = $(this).data("category");
+
+                const confirmDelete = confirm("Bạn có chắc chắn muốn xóa kỹ năng này không?");
+
+                if (confirmDelete) {
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/category/deletecategory', // Đường dẫn tới API xóa
+                        data: {
+                            id: newId
+                        },
+                        success: function (res) {
+                            showSuccess("Xóa kỹ năng thành công.");
+                            $(`#container-category-${newId}`).remove();
+                        },
+                        error: function (err) {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    });
+                }
+            });
+        });
+            
+    </script>
+}

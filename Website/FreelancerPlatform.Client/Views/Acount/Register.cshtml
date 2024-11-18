@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="register-form" style="max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center;">Đăng Ký</h2>
+    <form>
+        <!-- Trường Email -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="email">Email:</label>
+            <input type="email" id="email-register" class="form-control" placeholder="Nhập địa chỉ email" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+        </div>
+
+        <!-- Trường Họ Tên Đệm -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="middle-name">Họ Tên Đệm:</label>
+            <input type="text" id="last-name-register" class="form-control" placeholder="Nhập họ tên đệm" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+        </div>
+
+        <!-- Trường Tên -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="first-name">Tên:</label>
+            <input type="text" id="first-name-register" class="form-control" placeholder="Nhập tên" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px; position: relative;">
+            <label for="password">Mật Khẩu:</label>
+            <input type="password" id="password-register" class="form-control" placeholder="Nhập mật khẩu" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+            <i id="toggle-password" class="fa fa-eye" style="position: absolute; top: 72%; right: 15px; transform: translateY(-50%); cursor: pointer;"></i>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px; position: relative;">
+            <label for="confirm-password">Nhập lại mật khẩu:</label>
+            <input type="password" id="confirm-password-register" class="form-control" placeholder="Nhập lại mật khẩu" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+            <i id="toggle-confirm-password" class="fa fa-eye" style="position: absolute; top: 72%; right: 15px; transform: translateY(-50%); cursor: pointer;"></i>
+        </div>
+
+        <!-- Nút Đăng Ký -->
+        <button id="btn-register" type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+            Đăng Ký
+        </button>
+
+        <!-- Thẻ điều hướng đến trang đăng nhập -->
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="#" style="text-decoration: none; font-size: 14px;">Đã có tài khoản? Đăng nhập</a>
+        </div>
+    </form>
+</div>
+@section script {
+    <script>
+        $(document).ready(function () {
+            $('#toggle-password').on('click', function () {
+                var passwordField = $('#password-register');
+                var type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            });
+
+            // Toggle mật khẩu hiển thị cho trường "Nhập lại mật khẩu"
+            $('#toggle-confirm-password').on('click', function () {
+                var confirmPasswordField = $('#confirm-password-register');
+                var type = confirmPasswordField.attr('type') === 'password' ? 'text' : 'password';
+                confirmPasswordField.attr('type', type);
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            });
+
+            $('body').on('click', '#btn-register', function (e) {
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newEmail = $('#email-register').val();
+                var newFirstName = $('#first-name-register').val();
+                var newLastName = $('#last-name-register').val();
+                var newPassword = $('#password-register').val();
+                var newConfirmPassword = $('#confirm-password-register').val();
+
+                $.ajax({
+                    url: '/dang-ky',
+                    type: 'POST',
+                    data: {
+                        email: newEmail,
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        password: newPassword,
+                        confirmPassword: newConfirmPassword
+                    },
+                    success: function (response) {
+                        window.location.replace('/dang-nhap');
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr); // Đảm bảo rằng bạn đang ghi lại biến xhr
+                        var errors = xhr.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0]; // Nếu có ít nhất một lỗi
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.'); // Xử lý lỗi không có phản hồi từ máy chủ
+                        }
+                    }
+                });
+            }); // Đóng hàm click
+        }); // Đóng hàm ready
+    </script>
+}

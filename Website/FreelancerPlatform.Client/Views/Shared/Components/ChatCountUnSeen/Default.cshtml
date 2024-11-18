@@ -1,0 +1,10 @@
+﻿@model int
+
+@{
+    if(Model > 0)
+    {
+        <span id="chat-count" style="background-color: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-block; text-align: center; font-size: 12px; line-height: 20px; position: relative; top: -10px; left: 5px;">
+            @Model
+        </span>
+    }
+}

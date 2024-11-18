@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewData["Title"] = "CreatePost";
+}
+
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h1 style="font-size: 24px; margin-bottom: 20px;">Tạo bài đăng</h1>
+
+
+    <div class="form-section" style="margin-bottom: 20px;">
+        <div class="form-section" style="margin-bottom: 20px;">
+            <label for="hourly-rate" style="font-size: 18px;">Tiêu đề bài đăng:</label>
+            <input value="" type="text" id="title-post" placeholder="Nhập tiêu đề bài đăng" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+        <label for="bio" style="font-size: 18px;">Nội dung bài đăng:</label>
+        <textarea id="content_post" rows="4" placeholder="Nhập nội dung bài đăng" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+        <div id="container-edit-avatar" class="avatar-section" style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px;">
+            <label for="upload-avatar-edit" style="font-size: 18px;">Ảnh đính kèm:</label>
+            <input type="file" id="image-post" accept="image/*" style="margin-top: 10px;">
+        </div>
+    </div>
+
+    <div class="submit-section" style="text-align: center;">
+        <button id="btn-create-post" class="submit-btn" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Đăng bài</button>
+    </div>
+</div>
+
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            CKEDITOR.replace('content_post');
+            $('body').on('click', '#btn-create-post', function (e) {
+
+                const newTitle = $('#title-post').val();
+                const newContent = CKEDITOR.instances.content_post.getData();
+                const newImageUrl = $('#image-post')[0].files[0];
+
+                const formData = new FormData();
+                formData.append('title', newTitle);
+                formData.append('content', newContent);
+                formData.append('imageUrl', newImageUrl);
+
+                $.ajax({
+                    type: "POST",
+                    url: '/dang-bai',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        showSuccess("Đăng bài thành công");
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

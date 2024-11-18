@@ -1,0 +1,73 @@
+﻿@model FreelancerPlatform.Application.Dtos.Transaction.TransactionQuickViewModelSecond
+
+@{
+    ViewData["Title"] = "Chi tiết Giao dịch";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4XLCue3r/9SO2u8l3i5TXtjpe3S74GCTZm+eX" crossorigin="anonymous">
+
+<input id="transaction-id" value="@Model.Id" type="hidden" />
+<div class="container mt-4">
+    <!-- Header with Selection -->
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: white; color: black; border-radius: 5px;">
+        <h2 style="margin: 0;">Chi tiết Giao dịch</h2>
+
+        <!-- Selection Dropdown -->
+        <select id="transactionFilter" style="padding: 8px; width: 170px; border-radius: 5px; font-size: 14px;">
+]            <option selected="@(Model.Status == true)" value="@true">Đã xử lý</option>
+            <option selected="@(Model.Status == false)"  value="@false">Chưa xử lý</option>
+        </select>
+    </div>
+
+    <!-- Transaction Details Card -->
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><i class="fas fa-user"></i> <strong>Mã tài khoản chuyển:</strong> @Model.FreelancerA</p>
+            <p><i class="fas fa-id-card"></i> <strong>Tên tài khoản chuyển:</strong> @Model.LastNameA @Model.FirstNameA</p>
+            <p><i class="fas fa-coins"></i> <strong>Số tiền:</strong> @Model.Amount.ToString("N0") đ</p>
+            <p><i class="fas fa-calendar-alt"></i> <strong>Ngày chuyển:</strong> @Model.CreateDay.ToString("dd/MM/yyyy HH:mm")</p>
+            <hr />
+            <p><i class="fas fa-user"></i> <strong>Mã tài khoản nhận:</strong> @Model.FreelancerB</p>
+            <p><i class="fas fa-id-card"></i> <strong>Tên tài khoản nhận:</strong> @Model.LastNameB @Model.FirstNameB</p>
+            <p><i class="fas fa-credit-card"></i> <strong>Số tài khoản nhận:</strong> @Model.BankNumberReceipt</p>
+            <p><i class="fas fa-university"></i> <strong>Ngân hàng tài khoản nhận:</strong> @Model.BankNameReceipt</p>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        $('body').on('change', '#transactionFilter', function (e) { // Thay đổi ở đây
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+            var newId = $('#transaction-id').val();
+            var newStatus = $('#transactionFilter').val();
+            $.ajax({
+                url: '/transaction/updatestatus', // Đảm bảo đường dẫn này là đúng
+                type: 'POST',
+                data: {
+                    id: newId,
+                    status: newStatus
+                },
+                success: function (response) {
+                    showSuccess("Cập nhật trạng thái giao dịch thành công");
+                },
+                error: function (xhr) {
+                    var errors = xhr.responseJSON.errors;
+
+                    if (errors) {
+                        var error = errors[0]; // Nếu có ít nhất một lỗi
+
+                        var messages = error.errors;
+
+                        if (messages.length > 1) {
+                            showError(messages[1]);
+                        } else {
+                            showError(messages[0]);
+                        }
+                    } else {
+                        showError('Đã xảy ra lỗi không xác định.'); // Xử lý lỗi không có phản hồi từ máy chủ
+                    }
+                }
+            });
+        });
+    </script>
+}

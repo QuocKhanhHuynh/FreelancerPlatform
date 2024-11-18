@@ -1,0 +1,926 @@
+﻿@using FreelancerPlatform.Application.Extendsions
+@using Newtonsoft.Json
+@model List<FreelancerPlatform.Application.Dtos.Post.PostViewModel>
+
+@{
+    ViewData["Title"] = "Cộng Đồng";
+}
+
+<input type="hidden" id="freelancer-id" value="@User.GetUserId()" />
+<input type="hidden" id="parent-value" value="0" />
+<input type="hidden" id="reply-value" value="0" />
+<input type="hidden" id="like-post" value="@ViewBag.LikePost" />
+<input type="hidden" id="like-comment" value='@Html.Raw(JsonConvert.SerializeObject(ViewBag.LikeComment))' />
+
+
+<div class="posts-container" style="display: block; width: 100%; max-width: 1200px; margin: auto; padding-top: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); border-radius: 10px; overflow: hidden; height: 600px; overflow-y: auto;">
+
+    <!-- Thanh navbar bên trong chat-container -->
+    @{
+        if (User.Identity.IsAuthenticated)
+        {
+                                                    <div class="navbar" style="width: 100%; background-color: white; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; color: #0078D4; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000;">
+                                                        <span style="flex-grow: 1;"></span> <!-- Spacer to push button to the right -->
+                                                        <a href="~/dang-bai" style="background-color: #0078D4; color: white; padding: 2px 20px; border-radius: 5px; font-size: 0.9em; cursor: pointer; height: 30px; width: 120px;">Đăng bài &nbsp;<i class="fa fa-plus"></i></a>
+                                                    </div>
+        }
+    }
+
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 0;">
+
+    @{
+        foreach(var i in Model)
+        {
+                                                    <div id="container-post-@i.Id" class="post" style="background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); margin-bottom: 20px;">
+                                                        <div class="post-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                <img src=@(i.ImageUrl != null && i.ImageUrl != ""? $"/Image/{i.FreelancerImageUrl}" : "/images/default-avatar.jpg") alt="Avatar" class="avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                                                <div style="display: flex; align-items: center;">
+                                                                    <h6 class="post-author" style="margin: 0;">@($"{i.LastName} {i.FirstName}")</h6>
+                                                                   
+                                                                    @{
+                                                                        // (int)((DateTime.Now - i.CreateDay)).TotalDays "ngày trước"
+                                                                        string result = "";
+                                                                        var timeDifference = DateTime.Now - i.CreateDay;
+                                                                        if (timeDifference.TotalMinutes < 60)
+                                                                        {
+                                                                            // Nếu độ chênh lệch nhỏ hơn 1 giờ, hiển thị độ chênh lệch theo phút
+                                                                            result = $"{(int)timeDifference.TotalMinutes} phút trước";
+                                                                        }
+                                                                        else if (timeDifference.TotalHours < 24)
+                                                                        {
+                                                                            // Nếu độ chênh lệch nhỏ hơn 24 giờ, hiển thị độ chênh lệch theo giờ
+                                                                            result = $"{(int)timeDifference.TotalHours} giờ trước";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            // Nếu độ chênh lệch lớn hơn hoặc bằng 24 giờ, hiển thị độ chênh lệch theo ngày
+                                                                            result = $"{(int)timeDifference.TotalDays} ngày trước";
+                                                                        }
+                                                                        <p class="post-time" style="color: gray; font-size: 0.9em; margin: 0; margin-left: 10px;">
+                                                                            @result
+                                                                        </p>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Buttons for editing and deleting the post -->
+                                                            <div id="container-btn-post-@i.Id" style="display: flex; align-items: center; gap: 10px;">
+                                                        @{
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                if (i.FreelancerId == User.GetUserId())
+                                {
+                                                                                                    <button data-post="@i.Id" class="btn-edit-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Chỉnh bài đăng">
+                                                                                                        <i class="fa fa-pen" style="font-size: 1.2em;"></i>
+                                                                                                    </button>
+                                                                                                    <button data-post="@i.Id" class="btn-delete-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Xoá bài đăng">
+                                                                                                        <i class="fa fa-trash" style="font-size: 1.2em;"></i>
+                                                                                                    </button>
+                                }
+                                else
+                                {
+                                    if (!ViewBag.SavePost.Contains(i.Id))
+                                    {
+                                                                                                        <button data-post="@i.Id" class="btn-save-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Lưu bài đăng">
+                                                                                                            <i class="fa fa-bookmark" style="font-size: 1.2em;"></i>
+                                                                                                        </button>
+                                    }
+                                    else
+                                    {
+                                                                                                        <button data-post="@i.Id" class="btn-unsave-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Bỏ lưu bài đăng">
+                                                                                                            <i class="fa fa-bookmark" style="font-size: 1.2em;  color: #0078D4;"></i>
+                                                                                                        </button>
+                                    }
+                                }
+                            }
+                                                        }
+                                                            </div>
+                                                        </div>
+
+
+                                                        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+                                                        <h5 class="post-title" style="font-size: 1.5em; margin: 0 0 10px;">@i.Title</h5>
+                                                        <p class="post-content" style="margin: 0 0 15px;">@Html.Raw(i.Content)</p>
+                                                       
+                                                        @{
+                    if (i.ImageUrl != null && i.ImageUrl != "")
+                    {
+                                                                                                        <img src=@( $"/Image/{i.ImageUrl}") alt="Post Image" class="post-image" style="max-width: 50%; height: auto; margin-bottom: 15px; border-radius: 8px;">
+
+                    }
+                                                        }
+                                                        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+
+                                                        <div class="post-footer" style="display: flex; align-items: center; color: #555; font-size: 0.9em;">
+                                                            <span style="display: flex; gap: 20px;">
+                                                                 <span id="container-number-like-@i.Id">
+                                                            @{
+                                if (!ViewBag.LikePost.Contains(i.Id))
+                                {
+                                                                                                    <span data-post="@i.Id" style="cursor: pointer;" class="like">
+                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="number-like-@i.Id" class="likes-count">@i.LikeNumber</span>
+                                                                                                    </span>
+                                }
+                                else
+                                {
+                                                                                                    <span data-post="@i.Id" style="cursor: pointer; color: #0078D4;" class="unlike">
+                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="number-like-@i.Id" class="likes-count">@i.LikeNumber</span>
+                                                                                                    </span>
+                                }
+                                                            }
+                                                               </span>
+                                                                <span class="comments" data-post="@i.Id" style="cursor: pointer;">
+                                                                    <i class="fa fa-comment"></i> <span class="comments-count" id="number-comment-@i.Id">@i.CommentNumber</span>
+                                                                </span>
+                                                            </span>
+                                                        </div>
+
+                                                        <!-- Container for comments -->
+                                                        <div id="comments-container-@i.Id" class="comments-container" style="display: none; padding: 15px;">
+                                                            
+                                                        </div>
+
+                                                    </div>
+        }
+    }
+
+</div>
+<script src="/js/processDatetime.js"></script>
+@section script {
+    <script>    
+        btnSavePost();
+        btnUnSavePost();
+        btnLikePost();
+        btnUnLikePost();
+        TitleBtnLikePost();
+        TitleBtnUnLikePost();
+        ChilrendTitleBtnLikePost();
+        ChilrendTitleBtnUnLikePost();
+        viewReply();
+        replyLink();
+        function btnSavePost() {
+            $('.btn-save-post').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+
+
+                $.ajax({
+                    url: '/Community/SavePost',
+                    type: 'POST',
+                    data: {
+                        postId: newId
+                    },
+                    success: function (response) {
+                        showSuccess('Lưu bài đăng thành công.');
+                        var container = $(`#container-btn-post-${newId}`);
+                        var html = `
+                                                     <button data-post="${newId}" class="btn-unsave-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Bỏ lưu bài đăng">
+                                                                <i class="fa fa-bookmark" style="font-size: 1.2em;  color: #0078D4;"></i>
+                                                    </button>
+                            `;
+                        container.html(html);
+                        btnUnSavePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function btnUnSavePost(){
+            $('.btn-unsave-post').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+
+
+                $.ajax({
+                    url: '/Community/UnSavePost',
+                    type: 'POST',
+                    data: {
+                        postId: newId
+                    },
+                    success: function (response) {
+                        showSuccess('Bỏ lưu bài đăng thành công.');
+                        var container = $(`#container-btn-post-${newId}`);
+                        var html = `
+                                                        <button data-post="${newId}" class="btn-save-post" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Lưu bài đăng">
+                                                            <i class="fa fa-bookmark" style="font-size: 1.2em;"></i>
+                                                        </button>
+                                    `;
+                        container.html(html);
+                        btnSavePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function btnLikePost() {
+            $('.like').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+                //   alert(newId);
+
+                $.ajax({
+                    url: '/Community/LikePost',
+                    type: 'POST',
+                    data: {
+                        postId: newId
+                    },
+                    success: function (response) {
+                        var container = $(`#container-number-like-${newId}`);
+                        var numberLike = parseInt($(`#number-like-${newId}`).text())
+                        numberLike++;
+                        var html = `
+                                                                             <span data-post="${newId}" style="cursor: pointer; color: #0078D4;" class="unlike">
+                                                                        <i class="fa fa-thumbs-up"></i> <span id="number-like-${newId}" class="likes-count">${numberLike}</span>
+                                                    </span>
+                                    `;
+                        container.html(html);
+                        btnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function btnUnLikePost(){
+            $('.unlike').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+                //   alert(newId);
+
+                $.ajax({
+                    url: '/Community/UnLikePost',
+                    type: 'POST',
+                    data: {
+                        postId: newId
+                    },
+                    success: function (response) {
+                        var container = $(`#container-number-like-${newId}`);
+                        var numberLike = parseInt($(`#number-like-${newId}`).text())
+                        numberLike--;
+                        var html = `
+                                                                                             <span data-post="${newId}" style="cursor: pointer;" class="like">
+                                                                        <i class="fa fa-thumbs-up"></i> <span id="number-like-${newId}" class="likes-count">${numberLike}</span>
+                                                    </span>
+                                            `;
+                        container.html(html);
+                        btnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                      //  showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function TitleBtnLikePost() {
+            $('.title-like').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+               //   alert('ok');
+                var newId = $(this).data("post");
+                var newCommentId = $(this).data("comment-id");
+               
+
+                $.ajax({
+                    url: '/Comment/AddLikeComment',
+                    type: 'POST',
+                    data: {
+                        commentId: newCommentId
+                    },
+                    success: function (response) {
+                        var container = $(`#title-container-number-like-${newCommentId}`);
+                        var numberLike = parseInt($(`#title-number-like-${newCommentId}`).text())
+                        numberLike++;
+                        var html = `
+                                                                                                        <span data-post="${newId}" data-comment-id="${newCommentId}" style="cursor: pointer; color: #0078D4;" class="title-unlike">
+                                                                                                            <i class="fa fa-thumbs-up"></i> 
+                                                                                                         <span id="title-number-like-${newCommentId}" class="likes-count">${numberLike}
+                                                                                                        </span>
+                                                                    </span>
+                                               </span>
+                                            `;
+                        container.html(html);
+                        TitleBtnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        //showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function TitleBtnUnLikePost() {
+            $('.title-unlike').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+                var newCommentId = $(this).data("comment-id");
+              //  alert(newCommentId);
+
+                $.ajax({
+                    url: '/Comment/DeleteLikeComment',
+                    type: 'POST',
+                    data: {
+                        commentId: newCommentId
+                    },
+                    success: function (response) {
+                        var container = $(`#title-container-number-like-${newCommentId}`);
+                        var numberLike = parseInt($(`#title-number-like-${newCommentId}`).text())
+                        numberLike--;
+                        var html = `
+                                                                                                                <span data-post="${newId}" data-comment-id="${newCommentId}" style="cursor: pointer;" class="title-like">
+                                                                                                                    <i class="fa fa-thumbs-up"></i>
+                                                                                                                 <span id="title-number-like-${newCommentId}" class="likes-count">${numberLike}
+                                                                                                                </span>
+                                                                            </span>
+                                                       </span>
+                                                    `;
+                        container.html(html);
+                        TitleBtnLikePost();
+                       // btnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+
+        function ChilrendTitleBtnLikePost() {
+            $('.chilrend-title-like').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //   alert('ok');
+                var newId = $(this).data("post");
+                var newCommentId = $(this).data("comment-id");
+
+
+                $.ajax({
+                    url: '/Comment/AddLikeComment',
+                    type: 'POST',
+                    data: {
+                        commentId: newCommentId
+                    },
+                    success: function (response) {
+                        var container = $(`#chilrend-title-container-number-like-${newCommentId}`);
+                        var numberLike = parseInt($(`#chilrend-title-number-like-${newCommentId}`).text())
+                        numberLike++;
+                        var html = `
+                                                                                                                        <span data-post="${newId}" data-comment-id="${newCommentId}" style="cursor: pointer; color: #0078D4;" class="chilrend-title-unlike">
+                                                                                                                    <i class="fa fa-thumbs-up"></i>
+                                                                                                                         <span id="chilrend-title-number-like-${newCommentId}" class="likes-count">${numberLike}
+                                                                                                                </span>
+                                                                            </span>
+                                                       </span>
+                                                    `;
+                        container.html(html);
+                        ChilrendTitleBtnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        //showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function ChilrendTitleBtnUnLikePost() {
+            $('.chilrend-title-unlike').on('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                //  alert('ok');
+                var newId = $(this).data("post");
+                var newCommentId = $(this).data("comment-id");
+                //  alert(newCommentId);
+
+                $.ajax({
+                    url: '/Comment/DeleteLikeComment',
+                    type: 'POST',
+                    data: {
+                        commentId: newCommentId
+                    },
+                    success: function (response) {
+                        var container = $(`#chilrend-title-container-number-like-${newCommentId}`);
+                        var numberLike = parseInt($(`#chilrend-title-number-like-${newCommentId}`).text())
+                        numberLike--;
+                        var html = `
+                                                                                                                        <span data-post="${newId}" data-comment-id="${newCommentId}" style="cursor: pointer;" class="chilrend-title-like">
+                                                                                                                            <i class="fa fa-thumbs-up"></i>
+                                                                                                                                 <span id="chilrend-title-number-like-${newCommentId}" class="likes-count">${numberLike}
+                                                                                                                        </span>
+                                                                                    </span>
+                                                               </span>
+                                                            `;
+                        container.html(html);
+                        ChilrendTitleBtnLikePost();
+                        // btnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+
+        $('.btn-delete-post').on('click', function (event) {
+            event.preventDefault(); // Ngăn hành động mặc định
+          //  alert('ok');
+            var newId = $(this).data("post");
+
+
+            $.ajax({
+                url: '/Community/DeletePost',
+                type: 'POST',
+                data: {
+                    id: newId
+                },
+                success: function (response) {
+                    showSuccess('Xóa bài đăng thành công.');
+                    var container = document.getElementById(`container-post-${newId}`);
+                    if (container) {
+                        container.remove();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    showError('Hãy đăng nhập');
+                }
+            });
+        });
+
+        $('.btn-edit-post').on('click', function (event) {
+            event.preventDefault(); // Ngăn hành động mặc định
+            //  alert('ok');
+            var newId = $(this).data("post");
+            window.location.replace(`/chinh-bai-dang/${newId}`)
+        });
+
+        // Event handler for submitting a new comment
+        $('.comments-container').on('click', '.btn-submit-comment', function () {
+            var postId = $(this).data('post');
+            var newComment = $(`#new-comment-${postId}`).val();
+
+            if (newComment.trim() !== "") {
+                // Send the comment via AJAX
+               /* $.ajax({
+                    url: '/Community/AddComment',
+                    type: 'POST',
+                    data: { postId: postId, content: newComment },
+                    success: function (response) {
+                        showSuccess('Bình luận đã được thêm.');
+                        // Optionally, append the new comment to the list of comments
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Vui lòng đăng nhập.');
+                    }
+                });*/
+            } else {
+                alert('Nội dung bình luận không được để trống.');
+            }
+        });
+
+
+
+        $('.comments').on('click', function (event) {
+            event.preventDefault();
+            var postId = $(this).data('post');
+            var commentsContainer = $(`#comments-container-${postId}`);
+
+            // Check if comments are already loaded and visible
+            if (commentsContainer.is(':visible')) {
+                commentsContainer.slideUp(); // Hide comments if already visible
+            } else {
+
+               
+
+                // Load comments via AJAX
+                $.ajax({
+                    url: '/Comment/GetCommentOfPost', // API to get comments
+                    type: 'POST',
+                    data: { postId: postId },
+                    success: function (comments) {
+                        console.log(comments);
+                        commentsContainer.empty();
+
+                        var likeComment = $('#like-comment').val();
+                        console.log('like comment')
+                        console.log(likeComment.length)
+                       
+                        comments.forEach(function (comment) {
+                            var time = timeDifference(comment.createDay)
+                            // Render comments
+                            var commentHtml = `
+                        <div class="comment" style="padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="${comment.imageUrl != null && comment.imageUrl != '' ? `/Image/${comment.imageUrl}` : "/images/default-avatar.jpg"}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                <div>
+                                    <span style="font-weight: bold;">${comment.lastName} ${comment.firstName}</span>
+                                                    <span style="color: gray; font-size: 0.9em;">${time}</span>
+                                </div>
+                            </div>
+                            <p style="margin: 10px 0;">${comment.content}</p>
+                           `;
+                           
+                            if (!likeComment.includes(comment.id)) {
+                                commentHtml += `
+                                             <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                 <span style="display: flex; gap: 20px;">
+                                                         <span id="title-container-number-like-${comment.id}">
+
+                                                                                            <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer;" class="title-like">
+                                                                                                <i class="fa fa-thumbs-up"></i> <span id="title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                    </span>
+                                               </span>
+                                                                                                <a href="javascript:void(0);" class="reply-link" data-name="${comment.lastName} ${comment.firstName}" data-post="${postId}" data-comment-id="${comment.id}" style="color: #0078D4; font-size: 0.9em;">Trả lời</a>
+                                                                 <a href="javascript:void(0);" class="view-reply" data-post="${postId}" data-comment-id="${comment.id}" style="color: #0078D4; font-size: 0.9em;">${comment.replyNumber} luợt phản hồi</a>
+                                    </div>
+                                `;
+                            }
+
+                            else{
+                                commentHtml += `
+                                                     <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                         <span style="display: flex; gap: 20px;">
+                                                                 <span id="title-container-number-like-${comment.id}">
+
+                                                                                                            <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer; color: #0078D4;" class="title-unlike">
+                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                            </span>
+                                                       </span>
+                                                                                                        <a href="javascript:void(0);" class="reply-link" data-name="${comment.lastName} ${comment.firstName}" data-post="${postId}" data-comment-id="${comment.id}" style="color: #0078D4; font-size: 0.9em;">Trả lời</a>
+                                                                         <a href="javascript:void(0);" class="view-reply" data-post="${postId}" data-comment-id="${comment.id}" style="color: #0078D4; font-size: 0.9em;">${comment.replyNumber} luợt phản hồi</a>
+                                            </div>
+                                        `;
+                            }
+                           
+                           commentHtml += `
+
+                            <div class="replies" id="replies-container-${comment.id}" style="margin-left: 40px; padding-top: 10px;">
+                                <!-- Replies will be loaded here -->
+                            </div>
+                        </div>
+                    `;
+
+                            commentsContainer.append(commentHtml);
+                        });
+                        TitleBtnLikePost();
+                        TitleBtnUnLikePost();
+                        // Append input form for adding a new comment
+                        var commentFormHtml = `
+                    <div id="container-comment-input-${postId}">
+                        <div class="comment-input-form" style="
+                        position: sticky;
+                        bottom: 0;
+                        background-color: white;
+                        padding: 10px;
+                        width: 100%;
+                        z-index: 10;
+                        border-top: 1px solid #ddd;">
+
+                        <input type="text" id="new-comment-${postId}" placeholder="Nhập bình luận của bạn..." style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;">
+
+                        <button class="btn-submit-comment" data-post="${postId}" style="
+                            margin-top: 10px;
+                            padding: 10px 20px;
+                            background-color: #0078D4;
+                            color: #fff;
+                            border: none;
+                            border-radius: 5px;">
+                            Gửi bình luận
+                        </button>
+                    </div>
+            </div>
+        `;
+                        commentsContainer.append(commentFormHtml);
+
+                        // Show comments
+                        commentsContainer.slideDown();
+                        btnLikePost();
+                        btnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to load comments:', error);
+                    }
+                });
+            }
+        });
+
+        function viewReply() {
+            $('.comments-container').on('click', '.view-reply', function () {
+
+                var commentId = $(this).data('comment-id');
+                var postId = $(this).data('post');
+                var repliesContainer = $(`#replies-container-${commentId}`);
+
+                $.ajax({
+                    url: '/Comment/GetCommentOfParent', // API to get comments
+                    type: 'POST',
+                    data: { parent: commentId },
+                    success: function (comments) {
+                        console.log(comments);
+                        var likeComment = $('#like-comment').val();
+                        var commentHtml = ``;
+                        
+                        comments.forEach(function (comment) {
+                            // Render comments
+                            var time = timeDifference(comment.createDay)
+                            if (!likeComment.includes(comment.id)) {
+                                commentHtml += `
+                                                    <div class="reply" style="padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                                <img src="${comment.imageUrl != null && comment.imageUrl != '' ? `/Image/${comment.imageUrl}` : "/images/default-avatar.jpg"}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                                <div>
+                                                                            <span style="font-weight: bold;">${comment.lastName} ${comment.firstName}</span>
+                                                                    <span style="color: gray; font-size: 0.9em;">${time}</span>
+                                                                </div>
+                                                            </div>
+                                                                            <p style="margin: 10px 0;">${comment.content}</p>
+                                                                                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                    <span style="display: flex; gap: 20px;">
+                                                                    <span id="chilrend-title-container-number-like-${comment.id}">
+                                                                                            <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer;" class="chilrend-title-like">
+                                                                                                <i class="fa fa-thumbs-up"></i> <span id="chilrend-title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                    </span>
+                                                </span>
+
+                                    </div>
+
+                                                        </div>
+                                    `;
+
+
+                            }
+                            else {
+                                commentHtml += `
+                                                    <div class="reply" style="padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                                <img src="${comment.imageUrl != null && comment.imageUrl != '' ? `/Image/${comment.imageUrl}` : "/images/default-avatar.jpg"}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                                <div>
+                                                                            <span style="font-weight: bold;">${comment.lastName} ${comment.firstName}</span>
+                                                                    <span style="color: gray; font-size: 0.9em;">${time}</span>
+                                                                </div>
+                                                            </div>
+                                                                            <p style="margin: 10px 0;">${comment.content}</p>
+                                                                                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                    <span style="display: flex; gap: 20px;">
+                                                            <span id="chilrend-title-container-number-like-${comment.id}">
+                                                                                                    <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer; color: #0078D4;" class="chilrend-title-unlike">
+                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="chilrend-title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                    </span>
+                                                </span>
+
+                                    </div>
+
+                                                        </div>
+                                    `;
+                            }
+
+                        });
+
+                        repliesContainer.html(commentHtml);
+                        ChilrendTitleBtnUnLikePost();
+                        ChilrendTitleBtnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to load comments:', error);
+                    }
+                });
+
+
+            });
+        }
+        
+        function replyLink() {
+
+            $('.comments-container').on('click', '.reply-link', function () {
+
+                var commentId = $(this).data('comment-id');
+                var postId = $(this).data('post');
+
+                var repliesContainer = $(`#replies-container-${commentId}`);
+                $.ajax({
+                    url: '/Comment/GetCommentOfParent', // API to get comments
+                    type: 'POST',
+                    data: { parent: commentId },
+                    success: function (comments) {
+                        console.log(comments);
+                        var commentHtml = ``;
+                        var likeComment = $('#like-comment').val();
+                        comments.forEach(function (comment) {
+                            var time = timeDifference(comment.createDay)
+                            if (!likeComment.includes(comment.id)) {
+                                commentHtml += `
+                                                                    <div class="reply" style="padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+                                                                            <div style="display: flex; align-items: center;">
+                                                                                                <img src="${comment.imageUrl != null && comment.imageUrl != '' ? `/Image/${comment.imageUrl}` : "/images/default-avatar.jpg"}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                                                <div>
+                                                                                            <span style="font-weight: bold;">${comment.lastName} ${comment.firstName}</span>
+                                                                                    <span style="color: gray; font-size: 0.9em;">${time}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                                            <p style="margin: 10px 0;">${comment.content}</p>
+                                                                                                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                                    <span style="display: flex; gap: 20px;">
+                                                                                    <span id="chilrend-title-container-number-like-${comment.id}">
+                                                                                                            <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer;" class="chilrend-title-like">
+                                                                                                                <i class="fa fa-thumbs-up"></i> <span id="chilrend-title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                                    </span>
+                                                                </span>
+
+                                                    </div>
+
+                                                                        </div>
+                                                    `;
+
+
+                            }
+                            else {
+                                commentHtml += `
+                                                                    <div class="reply" style="padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+                                                                            <div style="display: flex; align-items: center;">
+                                                                                                <img src="${comment.imageUrl != null && comment.imageUrl != '' ? `/Image/${comment.imageUrl}` : "/images/default-avatar.jpg"}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                                                <div>
+                                                                                            <span style="font-weight: bold;">${comment.lastName} ${comment.firstName}</span>
+                                                                                    <span style="color: gray; font-size: 0.9em;">${time}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                                            <p style="margin: 10px 0;">${comment.content}</p>
+                                                                                                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                                                    <span style="display: flex; gap: 20px;">
+                                                                            <span id="chilrend-title-container-number-like-${comment.id}">
+                                                                                                                    <span data-post="${comment.postId}" data-comment-id="${comment.id}" style="cursor: pointer; color: #0078D4;" class="chilrend-title-unlike">
+                                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="chilrend-title-number-like-${comment.id}" class="likes-count">${comment.likeNumber}</span>
+                                                                                    </span>
+                                                                </span>
+
+                                                    </div>
+
+                                                                        </div>
+                                                    `;
+                            }
+
+
+
+
+                        });
+
+                        repliesContainer.html(commentHtml);
+                        ChilrendTitleBtnUnLikePost();
+                        ChilrendTitleBtnLikePost();
+                        if (repliesContainer.find('.reply-form').length === 0) {
+                            var replyForm = `
+                                                          <div class="reply-form" style="display: flex; align-items: center; width: 100%;">
+                                                            <input id="new-reply-${commentId}" type="text" placeholder="Nhập nội dung bình luận..."
+                                                   style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px; width: 100%;">
+                                                    <button class="btn-reply" data-post="${postId}" data-comment-id="${commentId}"
+                                                    style="padding: 10px 20px; background-color: #0078D4; color: #fff; border: none; border-radius: 5px; cursor: pointer;"
+                                                    >Gửi</button>
+                                        </div>
+
+                                                `;
+                            repliesContainer.append(replyForm);
+
+
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to load comments:', error);
+                    }
+                });
+
+
+            });
+        }
+
+        $(document).on('click', '.btn-submit-comment', function () {
+            var postId = $(this).data('post');
+            var newComment = $(`#new-comment-${postId}`).val();
+            var newFreelancerId = $('#freelancer-id').val();
+            if (newComment.trim() !== "") {
+                // Send comment via AJAX (implement this for real functionality)
+                $.ajax({
+                    url: '/Comment/CreateComment',
+                    type: 'POST',
+                    data: { postId: postId, content: newComment, freelancerId: newFreelancerId },
+                    success: function (response) {
+                        var newCommentHtml = `
+                                                        <div class="comment" style="padding: 10px; margin-bottom: 10px;border: 1px solid #ddd; border-radius: 5px;">
+                                                    <div style="display: flex; align-items: center;">
+                                                                <img src="${response.imageUrl != null && response.imageUrl != '' ? `/Image/${response.imageUrl}` : `/images/default-avatar.jpg`}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                        <div>
+                                                            <span style="font-weight: bold;">${response.lastName} ${response.firstName}</span>
+                                                            <span style="color: gray; font-size: 0.9em;">Vừa xong</span>
+                                                        </div>
+                                                    </div>
+                                                    <p style="margin: 10px 0;">${newComment}</p>
+                                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                        <!-- Nút Thích -->
+                                                        <!-- Hiển thị số lượt thích -->
+                                                                    <span style="display: flex; gap: 20px;">
+                                                                                    <span id="title-container-number-like-${response.commendId}">
+                                                                                                                    <span data-post="${postId}" data-comment-id="${response.commendId}" style="cursor: pointer;" class="title-like">
+                                                                                                                        <i class="fa fa-thumbs-up"></i> <span id="title-number-like-${response.commendId}" class="likes-count">0</span>
+                                                                                    </span>
+                                                                </span>
+
+                                                        <!-- Liên kết Trả lời -->
+                                                                                                                <a href="javascript:void(0);" class="reply-link" data-post="${postId}" data-comment-id="${response.commendId}" style="color: #0078D4; font-size: 0.9em;">Trả lời</a>
+                                                                                            <a href="javascript:void(0);" class="view-reply" data-post="${postId}" data-comment-id="${response.commendId}" style="color: #0078D4; font-size: 0.9em;">0 luợt phản hồi</a>
+                                                    
+                                                </div>`;
+                        newCommentHtml += `
+
+                                    <div class="replies" id="replies-container-${response.commendId}" style="margin-left: 40px; padding-top: 10px;">
+                                        <!-- Replies will be loaded here -->
+                                    </div>
+                                </div>
+                            `;
+
+                        $(`#comments-container-${postId}`).prepend(newCommentHtml);
+                        $(`#new-comment-${postId}`).val(''); // Clear the comment input
+                        var numberComment = parseInt($(`#number-comment-${postId}`).text());
+                        numberComment++;
+                        $(`#number-comment-${postId}`).text(numberComment);
+                        viewReply();
+                        replyLink();
+                        TitleBtnLikePost();
+                        TitleBtnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Đã có lỗi xảy ra, vui lòng thử lại sau')
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.btn-reply', function () {
+            var postId = $(this).data('post');
+            var commentId = $(this).data('comment-id');
+            var newComment = $(`#new-reply-${commentId}`).val();
+            var newFreelancerId = $('#freelancer-id').val();
+          //  alert(`${postId} -  ${commentId} - ${newComment} - ${newFreelancerId}`)
+            if (newComment.trim() !== "") {
+                // Send comment via AJAX (implement this for real functionality)
+                $.ajax({
+                    url: '/Comment/CreateComment',
+                    type: 'POST',
+                    data: { postId: postId, content: newComment, freelancerId: newFreelancerId, parent: commentId },
+                    success: function (response) {
+                       // alert('ok')
+                        var newReplyHtml = `
+                                    <div class="reply" style="padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+                                                <div style="display: flex; align-items: center;">
+                                                                                <img src="${response.imageUrl != null && response.imageUrl != '' ? `/Image/${response.imageUrl}` : `/images/default-avatar.jpg`}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                                    <div>
+                                                                        <span style="font-weight: bold;">${response.lastName} ${response.firstName}</span>
+                                                        <span style="color: gray; font-size: 0.9em;">Vừa xong</span>
+                                                    </div>
+                                                </div>
+                                                                        <p style="margin: 10px 0;">${newComment}</p>
+                                                                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+
+                                        <span style="display: flex; gap: 20px;">
+                                                                <span id="chilrend-title-container-number-like-${response.commendId}">
+                                                                                                <span data-post="${postId}" data-comment-id="${response.commendId}" style="cursor: pointer;" class="chilrend-title-like">
+                                                                                            <i class="fa fa-thumbs-up"></i> <span id="chilrend-title-number-like-${response.commendId}" class="likes-count">0</span>
+                                                        </span>
+                                    </span>
+
+                        </div>
+                                            </div>`;
+                        var repliesContainer = $(`#replies-container-${commentId}`);
+                        repliesContainer.prepend(newReplyHtml);
+                        $(`#new-reply-${commentId}`).val(null);
+                        ChilrendTitleBtnLikePost();
+                        ChilrendTitleBtnUnLikePost();
+                    },
+                    error: function (xhr, status, error) {
+                        //showError('Đã có lỗi xảy ra, vui lòng thử lại sau')
+                    }
+                });
+            }
+        });
+
+
+    </script>
+}

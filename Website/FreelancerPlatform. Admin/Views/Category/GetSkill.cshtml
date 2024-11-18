@@ -1,0 +1,85 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Skill.SkillQuickViewModel>
+
+@{
+    ViewData["Title"] = "Kỹ năng";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Kỹ năng</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h5 style="margin: 0;">Danh sách kỹ năng</h5>
+            <!-- Nút thêm tài khoản nằm ở góc phải phía trên bảng -->
+            <a href="~/them-ky-nang" style="padding: 8px 12px; text-decoration: none; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                Thêm kỹ năng
+            </a>
+        </div>
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã kỹ năng</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Tên kỹ năng</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr id="container-skill-@i.Id">
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.Name</td>
+                            <td style="padding: 12px;">
+                                <button class="update-skill" data-skill="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Sửa
+                                </button>
+                                <button class="detele-skill" data-skill="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xóa
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '.update-skill', function (e) {
+
+                const newId = $(this).data("skill");
+                window.location.replace(`sua-ky-nang/${newId}`);
+            });
+
+
+            $('body').on('click', '.detele-skill', function (e) {
+               
+                const newId = $(this).data("skill");
+
+                const confirmDelete = confirm("Bạn có chắc chắn muốn xóa kỹ năng này không?");
+
+                if (confirmDelete) {
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/category/deleteskill', // Đường dẫn tới API xóa
+                        data: {
+                            id: newId
+                        },
+                        success: function (res) {
+                            showSuccess("Xóa kỹ năng thành công.");
+                            $(`#container-skill-${newId}`).remove();
+                        },
+                        error: function (err) {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

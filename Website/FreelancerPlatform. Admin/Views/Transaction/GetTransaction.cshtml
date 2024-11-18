@@ -1,0 +1,89 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Transaction.TransactionQuickViewModelSecond>
+
+@{
+    ViewData["Title"] = "Giao dịch";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Freelancer</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: center; align-items: center;">
+            <h5 style="margin: 0;">Danh sách giao dịch</h5>
+            <div style="display: flex; align-items: center; margin: 0 auto;">
+                <input id="keyword-search" type="text" placeholder="Tìm kiếm giao dịch..." style="margin: 0 10px; padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+                <button id="btn-search" style="padding: 8px 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                    Tìm
+                </button>
+
+                <select id="status-filter" style="padding: 8px 12px; font-size: 12px; border: 1px solid #ccc; background-color: white; margin-left: 10px;">
+                    <option value="@null">--Tất cả trạng thái--</option>
+                    <option value="@false">Chưa xử lý</option>
+                    <option value="@true">Đã xử lý</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã giao dịch</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Thời gian thực hiện</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Số tiền</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Trạng thái</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr>
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.CreateDay.ToString("dd/MM/yyy HH:mm")</td>
+                            <td style="padding: 12px;">@i.Amount.ToString("N0") đ</td>
+                            <td style="padding: 12px;">@(i.Status == false? "Chưa xử lý" : "Đã xử lý")</td>
+                            <td id="container-btn-lock-@i.Id" style="padding: 12px;">
+                                <button class="detail-transaction" data-transaction="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xem
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script {
+    <script>
+        searchAcount();
+        function searchAcount() {
+            $('body').on('click', '#btn-search', function (e) { // Thay đổi ở đây
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newkey = $('#keyword-search').val();
+                var newStatus = $('#status-filter').val();
+                window.location.replace(`/giao-dich?keyword=${newkey}&status=${newStatus}`)
+            });
+
+            $('body').on('change', '#status-filter', function (e) { // Thay đổi ở đây
+                e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+                var newStatus = $('#status-filter').val();
+                if (newStatus != null) {
+                    window.location.replace(`/giao-dich?status=${newStatus}`)
+                }
+                else{
+                    window.location.replace(`/giao-dich`)
+                }
+            });
+        }
+        $('body').on('click', '.detail-transaction', function (e) { // Thay đổi ở đây
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+            var newId = $(this).data("transaction");
+            window.location.replace(`/chi-tiet-giao-dich/${newId}`)
+        });
+    </script>
+}

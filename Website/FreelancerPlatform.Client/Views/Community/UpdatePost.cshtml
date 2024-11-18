@@ -1,0 +1,120 @@
+﻿@model FreelancerPlatform.Application.Dtos.Post.PostViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh bài đăng";
+}
+
+<input id="image-url-post" value="@Model.ImageUrl" type="hidden" />
+<input id="post-id" value="@Model.Id" type="hidden" />
+<input id="update-image-flag" value="0" type="hidden" />
+
+
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h1 style="font-size: 24px; margin-bottom: 20px;">Chỉnh bài đăng</h1>
+
+    <div class="form-section" style="margin-bottom: 20px;">
+        <div class="form-section" style="margin-bottom: 20px;">
+            <label for="hourly-rate" style="font-size: 18px;">Tiêu đề bài đăng:</label>
+            <input value="@Model.Title" type="text" id="title-post" placeholder="Nhập tiêu đề bài đăng" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+        <label for="bio" style="font-size: 18px;">Nội dung bài đăng:</label>
+        <textarea id="content_post" rows="4" placeholder="Nhập nội dung bài đăng" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">@Model.Content</textarea>
+
+        <div id="container-edit-avatar" class="avatar-section" style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px;">
+            @{
+                if (Model.ImageUrl != null && Model.ImageUrl != "")
+                {
+                        <img src=@($"/Image/{Model.ImageUrl}") alt="Post Image" class="post-image" style="max-width: 50%; height: auto; margin-bottom: 15px; border-radius: 8px;">
+                        <!-- Remove Image Button -->
+                        <button id="btn-remove-image" style="background-color: #ff4d4d; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; font-size: 14px; cursor: pointer; margin-top: 10px;">
+                            Gỡ ảnh
+                        </button>
+                }
+                else
+                {
+                        <label for="upload-avatar-edit" style="font-size: 18px;">Ảnh đính kèm:</label>
+                        <input type="file" id="image-post" accept="image/*" style="margin-top: 10px;">
+                }
+            }
+        </div>
+    </div>
+
+    <div class="submit-section" style="text-align: center;">
+        <button id="btn-update-post" class="submit-btn" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Lưu lại</button>
+    </div>
+</div>
+
+@section script{
+    <script>
+        CKEDITOR.replace('content_post');
+        $('#btn-remove-image').on('click', function (event) {
+            event.preventDefault();
+            $('#update-image-flag').val(1)
+
+            var container = document.getElementById('container-edit-avatar');
+            container.innerHTML = `
+                         <label for="upload-avatar-edit" style="font-size: 18px;">Ảnh đính kèm:</label>
+                            <input type="file" id="image-post" accept="image/*" style="margin-top: 10px;">
+            `;
+         //   alert($('#update-image-flag').val());
+            $('#image-post').on('change', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+                $('#update-image-flag').val(2)
+              //  alert($('#update-image-flag').val());
+            });
+        });
+
+        $('#image-post').on('change', function (event) {
+            event.preventDefault(); // Ngăn hành động mặc định
+            $('#update-image-flag').val(2)
+           // alert($('#update-image-flag').val());
+        });
+
+        $('body').on('click', '#btn-update-post', function (e) {
+
+            const newTitle = $('#title-post').val();
+            const newContent = CKEDITOR.instances.content_post.getData();
+            var newImageUrl = null;
+            var newId = $('#post-id').val();
+
+            var flag = $('#update-image-flag').val();
+            if (flag == 1) {
+                newImageUrl = '';
+            }
+            else if (flag == 2){
+                newImageUrl = $('#image-post')[0].files[0];
+            }
+
+            const formData = new FormData();
+            formData.append('title', newTitle);
+            formData.append('content', newContent);
+            formData.append('imageUrl', newImageUrl);
+            formData.append('id', newId);
+
+            $.ajax({
+                type: "POST",
+                url: '/Community/UpdatePost',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    showSuccess("Cập nhật bài thành công");
+                },
+                error: function (err) {
+                    var errors = err.responseJSON.errors;
+                    if (errors) {
+                        var error = errors[0];
+                        var messages = error.errors;
+                        if (messages.length > 1) {
+                            showError(messages[1]);
+                        } else {
+                            showError(messages[0]);
+                        }
+                    } else {
+                        showError('Đã xảy ra lỗi không xác định.');
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,13 @@
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\bin\Debug\net8.0\FreelancerPlatform.ApiService.deps.json
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\bin\Debug\net8.0\FreelancerPlatform.ApiService.dll
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\bin\Debug\net8.0\FreelancerPlatform.ApiService.pdb
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.csproj.AssemblyReference.cache
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.GeneratedMSBuildEditorConfig.editorconfig
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.AssemblyInfoInputs.cache
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.AssemblyInfo.cs
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.csproj.CoreCompileInputs.cache
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.sourcelink.json
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.dll
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\refint\FreelancerPlatform.ApiService.dll
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\FreelancerPlatform.ApiService.pdb
+D:\Luan van\src1\FreelancerPlatform\FreelancerPlatform.ApiService\obj\Debug\net8.0\ref\FreelancerPlatform.ApiService.dll

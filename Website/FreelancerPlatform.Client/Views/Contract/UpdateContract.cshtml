@@ -1,0 +1,69 @@
+﻿@model FreelancerPlatform.Application.Dtos.Contract.ContractUpdateRequest
+
+@{
+    ViewData["Title"] = "Cập nhật hợp đồng";
+}
+
+<input id="contract-id" value="@Model.Id" type="hidden" />
+
+
+<div style="max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center;">Tạo Hợp Đồng</h2>
+
+    <form>
+        <label for="contract-title" style="font-weight: bold;">Tên hợp đồng</label>
+        <input placeholder="Nhập tên hợp đồng" type="text" id="contract-name" value="@Model.Name" name="contract-title" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <label for="contract-content" style="font-weight: bold;">Nội dung hợp đồng</label>
+        <textarea id="contract-content" name="contract-content" rows="5" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">@Model.Content</textarea>
+
+        <label for="party-a-name" style="font-weight: bold;">Nguời thuê</label>
+        <input readonly value="@ViewBag.CreateUserFullName" type="text" id="contract-create-user" name="party-a-name" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <label for="party-b-name" style="font-weight: bold;">Người làm việc</label>
+        <input readonly value="@ViewBag.PartnerFullName" type="text" id="contract-party" name="party-b-name" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <button id="btn-update-contract" type="submit" style="background-color: #0078D4; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; display: block; margin: auto;">Cập nhật Hợp Đồng</button>
+    </form>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '#btn-update-contract', function (e) {
+                e.preventDefault();
+                const newContractId = $('#contract-id').val();
+                const newName = $('#contract-name').val();
+                const newContent = $('#contract-content').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Contract/UpdateContract',
+                    data: {
+                        id: newContractId,
+                        name: newName,
+                        content: newContent
+                    },
+                    success: function (res) {
+                        window.location.replace(`/chi-tiet-hop-dong/${newContractId}`);
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

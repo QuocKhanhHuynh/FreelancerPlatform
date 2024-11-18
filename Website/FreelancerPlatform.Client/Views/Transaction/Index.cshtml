@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Transaction";
+}
+
+<form asp-controller="Transaction" asp-action="CreateTransaction" method="post">
+
+    <button id="checkout">Thanh toán</button>
+
+</form>
+
+@section script {
+    <script>
+        /*$(document).ready(function () {
+            $(document).on('click', '#checkout', function () {
+                $.ajax({
+                    url: '/Transaction/CreateTransaction',
+                    type: 'POST',
+                    success: function (response) {
+                        // Xử lý phản hồi thành công
+                    },
+                    error: function (xhr, status, error) {
+                        // Xử lý lỗi
+                    }
+                });
+            });
+        });*/
+    </script>
+}
+
+<!--
+
+
+
+<h2>Private Chat</h2>
+
+<div id="messagesList"></div>
+
+<input type="text" id="messageInput" placeholder="Enter your message" />
+<input type="text" id="receiverInput" placeholder="Enter receiver ID" />
+<button id="sendButton">Send</button>
+
+<script src="/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+
+
+<script type="text/javascript">
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub")
+        .build();
+
+    /*connection.on("ReceiveMessage", function (message) {
+        var li = document.createElement("li");
+        li.textContent = message;
+        document.getElementById("messagesList").appendChild(li);
+    });*/
+
+    connection.on("ReceiveMessage", function (senderName, message) {
+        var li = document.createElement("li");
+        li.textContent = senderName + ": " + message;  // Hiển thị tên người gửi và tin nhắn
+        document.getElementById("messagesList").appendChild(li);
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    document.getElementById("sendButton").addEventListener("click", function (event) {
+        var message = document.getElementById("messageInput").value;
+        var receiverId = document.getElementById("receiverInput").value;
+
+        var li = document.createElement("li");
+        li.textContent = message;
+        document.getElementById("messagesList").appendChild(li);
+
+        connection.invoke("SendMessageToUser", receiverId, message).catch(function (err) {//SendMessageToUser
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    });
+</script>
+
+
+-->

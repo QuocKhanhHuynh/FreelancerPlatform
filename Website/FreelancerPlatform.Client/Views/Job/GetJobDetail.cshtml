@@ -1,0 +1,567 @@
+﻿@using FreelancerPlatform.Application.Extendsions
+@model FreelancerPlatform.Application.Dtos.Job.JobViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết dự án";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@{
+       // (int)((DateTime.Now - i.CreateDay)).TotalDays "ngày trước"
+       string resultDateTime = "";
+       var timeDifference = DateTime.Now - Model.CreateDay;
+       if (timeDifference.TotalMinutes < 60)
+       {
+       // Nếu độ chênh lệch nhỏ hơn 1 giờ, hiển thị độ chênh lệch theo phút
+        resultDateTime = $"{(int)timeDifference.TotalMinutes} phút trước";
+       }
+       else if (timeDifference.TotalHours < 24)
+       {
+       // Nếu độ chênh lệch nhỏ hơn 24 giờ, hiển thị độ chênh lệch theo giờ
+        resultDateTime = $"{(int)timeDifference.TotalHours} giờ trước";
+       }
+       else
+       {
+       // Nếu độ chênh lệch lớn hơn hoặc bằng 24 giờ, hiển thị độ chênh lệch theo ngày
+        resultDateTime = $"{(int)timeDifference.TotalDays} ngày trước";
+       }
+}
+
+
+<input id="job-id" value="@Model.Id" type="hidden" />
+<input id="is-offer" value="@ViewBag.IsOffer" type="hidden" />
+<input id="create-user" value="@Model.FreelancerId" type="hidden" />
+<input id="job-name" value="@Model.Name" type="hidden" />
+<input id="create-day-string" value="@resultDateTime" type="hidden" />
+
+
+
+<div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+
+    <div style="display: flex;">
+
+        <!-- Freelancer List Section -->
+        <div style="width: 75%; padding: 20px;" id="freelancer-list">
+            <div class="profile-header" style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div class="profile-info" style="flex-grow: 1;">
+                    <!-- Tên công việc -->
+                    <h1 style="font-size: 24px; margin: 0;">
+                        @Model.Name
+                          <span id="container-status-job">
+                            @{
+                                if (Model.IsHiden)
+                                {
+                                                        <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                            Đã ẩn
+                                                        </span>
+                                }
+                                else
+                                {
+                                                        <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                            @((int)((DateTime.Now - Model.CreateDay)).TotalDays)
+                                                            ngày trước
+                                                        </span>
+                                }
+                            }
+                          </span>
+                       
+                    </h1>
+                    <p style="margin: 5px 0;"><strong>Mã dự án:</strong> @Model.Id</p>
+                    <!-- Lĩnh vực công việc -->
+                    <p style="margin: 5px 0;"><strong>Lĩnh vực:</strong> @Model.Category.Name</p>
+
+                    <!-- Mức lương công việc -->
+                    <p style="margin: 5px 0;"><strong>Mức lương:</strong> @Model.MinDeal.ToString("N0")đ@(Model.MaxDeal > 0 ? $" - {Model.MaxDeal.ToString("N0")}đ" : "")</p>
+
+                    <!-- Loại hình công việc -->
+                    <p style="margin: 5px 0;"><strong>Loại công việc:</strong> @(Model.JobType == 1 ? "Công việc ngắn hạn" : "Công việc thường xuyên")</p>
+
+                    <p style="margin: 5px 0;"><strong>Hình thức làm việc:</strong> @(Model.SalaryType == 1 ? "Làm việc trực tuyến" : "Làm việc trực tiếp")</p>
+                    <p style="margin: 5px 0;"><strong>Hình thức trả lương:</strong> @(Model.SalaryType == 1 ? "Trả theo giờ" : Model.SalaryType == 2 ? "Trả khi kết thúc" : "Trả theo tháng")</p>
+
+                </div>
+
+                <!-- Icons section -->
+                <div class="icons" style="margin-left: auto; display: flex; align-items: flex-start; padding-top: 5px;">
+                    @{
+                        if(User.GetUserId() != Model.FreelancerId)
+                        {
+                                <div id="container-btn-potient-detail">
+                                    <button style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient-detail">
+                                        <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                    </button>
+                                </div>
+                        }
+                        else
+                        {
+                                <button id="submit-btn-edit" class="submit-btn" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Chỉnh bài đăng">
+                                    <i class="fa fa-pen" style="font-size: 1.2em;  color: #0078D4"></i>
+                                </button>
+
+                                <div id="container-btn-hiden">
+                                    @{
+                                    if (!Model.IsHiden)
+                                    {
+                                                <button class="add-hiden-job" data-create-job="@Model.CreateDay" data-hiden-job="@Model.Id" id="submit-btn-edit-hiden" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Xoá bài đăng">
+                                                    <i class="fa fa-eye" style="font-size: 1.2em; color: #0078D4"></i>
+                                                </button>
+                                    }
+                                    else
+                                    {
+                                                <button class="remove-hiden-job" data-create-job="@Model.CreateDay" data-hiden-job="@Model.Id" id="submit-btn-edit-unhide" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Xoá bài đăng">
+                                                    <i class="fa fa-eye" style="font-size: 1.2em; color: red"></i>
+                                                </button>
+                                    }
+                                    }
+                                </div>
+
+                            
+                           
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="skills-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Mô tả</h2>
+                <p> @Html.Raw(Model.Description)</p>
+
+            </div>
+
+
+            <!-- Moved skills section below freelancer info -->
+            <div class="skills-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng</h2>
+                <ul class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                    @{
+                        foreach( var i in Model.Skills)
+                        {
+                                                <li style="margin: 5px;">
+                                                    <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px;">@i.Name</span>
+                                                </li>
+                        }
+                    }
+                </ul>
+
+            </div>
+            <hr />
+            <div class="reviews-section" style="margin-bottom: 20px;">
+                @{
+                    if (User.Identity.IsAuthenticated && (User.GetUserId() != Model.FreelancerId))
+                        {
+                                            <div class="review-form" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                                <h2 style="font-size: 22px; margin-bottom: 10px;">Ứng tuyển</h2>
+                                                <div style="margin-bottom: 10px;">
+                                                    <label style="font-weight: bold;">Giới thiệu:</label>
+                                                    <textarea id="introduction" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;"></textarea>
+                                                </div>
+                                                <div style="margin-bottom: 10px;">
+                                                    <label style="font-weight: bold;">Mức lương đề xuất:</label>
+                                                    <input id="deal" type="text" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập mức lương đề xuất" />
+                                                </div>
+                                                <div style="margin-bottom: 10px;">
+                                                    <label style="font-weight: bold;">Số ngày dự kiến hoàn thành:</label>
+                                                    <input id="executionday" type="number" style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px;" placeholder="Nhập số ngày hoàn thành" />
+                                                </div>
+                                                <button id="btn-apply" style="background-color: #0078D4; color: #fff; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer;">Thực hiện ứng tuyển</button>
+                                            </div>
+                    }
+                }
+
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Danh sách ứng tuyển</h2>
+                <ul id="apply-list" class="reviews-list" style="list-style-type: none; padding: 0;">
+                    @{
+                        if (ViewBag.ApplyOfJob.Count > 0){
+                        foreach(var i in ViewBag.ApplyOfJob)
+                        {
+                                                <li id="li-apply-@i.Id" class="review-item" style="margin-bottom: 20px;">
+                                                    <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                        <img src="@((i.ImageUrl != null && i.ImageUrl != "") ? $"/Image/{i.ImageUrl}" : "/images/default-avatar.jpg")" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                                        <div class="review-info">
+                                                            <h3 class="review-username" style="font-size: 18px; margin: 0;">
+                                                                @i.LastName @i.FirstName
+                                                                @{
+                                                if (i.IsOffer)
+                                                {
+                                                                                            <span style="font-size: 12px; color: #0078D4; margin-left: 5px;">(được mời)</span>
+                                                }
+                                                                }
+                                                            </h3>
+                                                            <p class="review-date" style="font-size: 14px; color: gray;">@i.CreateDay.ToString("dd/MM/yyyy")</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <p class="review-content" style="font-size: 16px; line-height: 1.5;">@i.Introduction</p>
+
+                                                    <div class="review-extra-info" style="font-size: 16px; margin-top: 10px;">
+                                                        @if (i.Deal != 0)
+                                    {
+                                                            <p class="review-salary" style="margin: 0;"><strong>Lương đấu thầu:</strong> @i.Deal.ToString("N0")</p>
+                                    }
+
+                                                        <!-- Dùng flexbox để căn chỉnh thông tin ngày thực hiện đấu thầu và nút liên hệ -->
+                                                        <div class="review-bottom" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                                            <p class="review-days" style="margin: 0;"><strong>Số ngày thực hiện đấu thầu:</strong> @i.ExecutionDay ngày</p>
+
+                                                            @{
+                                            if (Model.FreelancerId == User.GetUserId())
+                                            {
+                                                                                        <a href="~/tin-nhan?freelancerB=@i.FreelancerId" class="contact-button" style="display: inline-block; padding: 8px 16px; background-color: #0078D4; color: white; border-radius: 4px; text-decoration: none;">Liên hệ</a>
+                                            }
+                                            else if (i.FreelancerId == User.GetUserId())
+                                            {
+                                                                                        <a href="#" data-apply="@i.Id" class="contact-button delete-apply" style="display: inline-block; padding: 8px 16px; background-color: #0078D4; color: white; border-radius: 4px; text-decoration: none;">Xóa</a>
+                                            }
+                                                            }
+                                                        </div>
+                                                    </div>
+
+
+                                                </li>
+                                <hr style="border: 0; border-top: 1px solid #ddd;">
+                            }
+                        }
+                        else
+                        {
+                           <p>Chưa có ứng tuyển</p>
+                        }
+                    }
+                    
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Filter Section -->
+        <div style="width: 30%; padding: 20px; border-left: 1px solid #ddd;">
+
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <strong>Người thuê: </strong> <a href="~/chi-tiet-freelancer/@ViewBag.Freelancer.Id">@ViewBag.Freelancer.LastName @ViewBag.Freelancer.FirstName</a>
+            </div>
+           
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Thông tin xác thực</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Freelancer.PaymentVerification == true)
+                            {
+                                                    <i class="fa fa-check-circle" style="color: green;"></i>
+                                                    <strong><i class="fas fa-credit-card" style="color: green"></i> Thanh toán:</strong>
+                                                    <span style="color: green;">Đã xác thực</span>
+                            }
+                            else
+                            {
+                                                    <i class="fa fa-check-circle" style="color: black;"></i>
+                                                    <strong><i class="fas fa-credit-card" style="color: black"></i> Thanh toán:</strong>
+                                                    <span style="color: black;">Đã xác thực</span>
+                            }
+                        }
+
+                    </li>
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (ViewBag.Freelancer.About == null || ViewBag.Freelancer.Categories.Count == 0 || ViewBag.Freelancer.Skills.Count == 0)
+                            {
+                                                    <i class="fa fa-check-circle" style="color: green;"></i>
+                                                    <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: green;">Chưa xác thực</span>
+                            }
+                            else
+                            {
+                                                    <i class="fa fa-check-circle" style="color: black;"></i>
+                                                    <strong><i class="fas fa-user"></i> Hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                            }
+                        }
+                        
+                    </li>
+                    <li style="margin: 5px 0;">
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                        <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+                    </li>
+                </ul>
+            </div>
+
+            @{
+                if(ViewBag.RelatedJob.Count > 0)
+                {
+                        <div class="authentication-info" style="margin-bottom: 20px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                            <h2 style="font-size: 22px; margin-bottom: 10px;">Công việc gợi ý</h2>
+                            <ul style="list-style-type: none; padding: 0;">
+                                @{
+                                foreach (var i in ViewBag.RelatedJob)
+                                {
+                                            <li style="margin: 5px 0;">
+                                                <a href="~/chi-tiet-du-an/@i.Id">
+                                                    <i class="fa fa-circle" style="color: #0078D4;"></i>
+                                                    <span>@i.Name</span>
+                                                </a>
+                                            </li>
+                                }
+                                }
+
+                            </ul>
+                        </div>
+                }
+            }
+
+        </div>
+
+    </div>
+    
+    
+
+</div>
+
+<script src="~/js/processDatetime.js"></script>
+
+
+@section script{
+    <script>
+
+        const connectionInJob = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+        connectionInJob.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        addHidenJob();
+        removeHidenJob();
+
+        function addHidenJob() {
+            $('.add-hiden-job').on('click', function () {
+              //  alert('ok');
+                var idJob = $(this).data('hiden-job');
+                var createDay = $(this).data('create-job');
+                $.ajax({
+                    url: '/Freelancer/HidenJob',
+                    type: 'POST',
+                    data: {
+                        id: idJob
+                    },
+                    success: function (response) {
+                        showSuccess('Ẩn dự án thành công.');
+                        var container = document.getElementById(`container-btn-hiden`); // Corrected variable name
+                        container.innerHTML = `
+                                                                                                 <button class="remove-hiden-job" data-create-job="${createDay}" data-hiden-job="${idJob}" id="submit-btn-edit-unhide"  style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Mở ẩn">
+                                                            <i class="fa fa-eye" style="font-size: 1.2em; color: red"></i>
+                                                        </button>
+                                                               `;
+
+                          var containerStatusJob = document.getElementById(`container-status-job`); // Corrected variable name
+                          containerStatusJob.innerHTML = `
+                                                                     <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                      Đã ẩn
+                                                  </span>
+                                                  `;
+                        addHidenJob();
+                        removeHidenJob();
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        function removeHidenJob(){
+            $('.remove-hiden-job').on('click', function () {
+                var idJob = $(this).data('hiden-job');
+                var createDay = $(this).data('create-job');
+                var createDayString = $('#create-day-string').val();
+                $.ajax({
+                    url: '/Freelancer/RemoveHidenJob',
+                    type: 'POST',
+                    data: {
+                        id: idJob
+                    },
+                    success: function (response) {
+                        showSuccess('Xóa ẩn dự án thành công.');
+                        var container = document.getElementById(`container-btn-hiden`); // Corrected variable name
+                        container.innerHTML = `
+                                                                                     <button class="add-hiden-job" data-create-job="${createDay}" data-hiden-job="${idJob}" id="submit-btn-edit-hiden" style="background-color: transparent; border: none; padding: 10px; border-radius: 5px; font-size: 1em; cursor: pointer; color: inherit;" title="Ẩn đi">
+                                                            <i class="fa fa-eye" style="font-size: 1.2em; color: #0078D4"></i>
+                                                        </button>
+                                                                    `;
+                        addHidenJob();
+                        removeHidenJob();
+                        // Tính số ngày cách biệt
+                        /*var now = new Date();
+                        var timeDiff = Math.abs(now - createDateObj); createDateObj
+                        var daysAgo = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Số ngày*/
+                        
+
+                        // Sau đó cập nhật vào container
+                        var containerStatusJob = document.getElementById('container-status-job');
+                        containerStatusJob.innerHTML = `
+                                                        <span style="font-size: 12px; color: gray; margin-left: 10px;">
+                                                                    ${createDayString}
+                                                        </span>
+                                                    `;
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+        }
+
+        $('#submit-btn-edit').on('click', function () {
+            var jobId = $('#job-id').val();
+           window.location.replace(`/sua-du-an/${jobId}`)
+        });
+
+        $('#deal').on('input', function () {
+            formatCurrency(this);
+        });
+
+        $('#btn-apply').on('click', function () {
+            var newJobId = $('#job-id').val();
+            var newDeal = convertFormatCurrencyToNumber($('#deal').val());
+            var newIntroduction = $('#introduction').val();
+            var newExecutionday = $('#executionday').val();
+
+            var isOffer = $('#is-offer').val();
+
+            $.ajax({
+                url: '/Apply/CreateApply',
+                type: 'POST',
+                data: {
+                    jobId: newJobId,
+                    deal: newDeal,
+                    introduction: newIntroduction,
+                    executionday: newExecutionday
+                },
+                success: function (res) {
+                    showSuccess("Ứng tuyển thành công");
+                    console.log(res);
+                    var html = '';
+                    if (isOffer) {
+                        html = `
+                            <li class="review-item" style="margin-bottom: 20px;">
+                                <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <img src="${res.imageUrl && res.imageUrl !== '' ? `/Image/${res.imageUrl}` : '/images/default-avatar.jpg'}" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                    <div class="review-info">
+                                        <h3 class="review-username" style="font-size: 18px; margin: 0;">
+                                        ${res.lastName} ${res.firstName}
+                                            <span style="font-size: 12px; color: #0078D4; margin-left: 5px;">(được mời)</span>
+                                        </h3>
+                                        <p class="review-date" style="font-size: 14px; color: gray;">${(new Date(res.createDay)).toLocaleDateString("vi-VN", { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                                    </div>
+                                </div>
+
+                                <p class="review-content" style="font-size: 16px; line-height: 1.5;">${res.introduction}</p>
+
+                                <div class="review-extra-info" style="font-size: 16px; margin-top: 10px;">
+                                    ${res.deal !== 0 ? `<p class="review-salary" style="margin: 0;"><strong>Lương đấu thầu:</strong> ${res.deal.toLocaleString('en-US')}</p>` : ''}
+
+                                    <div class="review-bottom" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                        <p class="review-days" style="margin: 0;"><strong>Số ngày thực hiện đấu thầu:</strong> ${res.executionDay} ngày</p>
+
+                                                         <a href="#" data-apply="${res.id}" class="contact-button delete-apply" style="display: inline-block; padding: 8px 16px; background-color: #0078D4; color: white; border-radius: 4px; text-decoration: none;">Xóa</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <hr style="border: 0; border-top: 1px solid #ddd;">
+                        `;
+                    }
+                    else {
+
+                        html = `
+                            <li class="review-item" style="margin-bottom: 20px;">
+                                <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <img src="${res.imageUrl && res.imageUrl !== '' ? `/Image/${res.imageUrl}` : '/images/default-avatar.jpg'}" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                    <div class="review-info">
+                                        <h3 class="review-username" style="font-size: 18px; margin: 0;">
+                                        ${res.lastName} ${res.firstName}
+                                        </h3>
+                                        <p class="review-date" style="font-size: 14px; color: gray;">${(new Date(res.createDay)).toLocaleDateString("vi-VN", { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                                    </div>
+                                </div>
+
+                                <p class="review-content" style="font-size: 16px; line-height: 1.5;">${res.introduction}</p>
+
+                                <div class="review-extra-info" style="font-size: 16px; margin-top: 10px;">
+                                    ${res.deal !== 0 ? `<p class="review-salary" style="margin: 0;"><strong>Lương đấu thầu:</strong> ${res.deal.toLocaleString('en-US')}</p>` : ''}
+
+                                    <div class="review-bottom" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                        <p class="review-days" style="margin: 0;"><strong>Số ngày thực hiện đấu thầu:</strong> ${res.executionDay} ngày</p>
+
+                                                         <a href="#" data-apply="${res.id}" class="contact-button delete-apply" style="display: inline-block; padding: 8px 16px; background-color: #0078D4; color: white; border-radius: 4px; text-decoration: none;">Xóa</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <hr style="border: 0; border-top: 1px solid #ddd;">
+                        `;
+                    }
+                    
+                    var listApplyElement = document.getElementById('apply-list');
+
+
+                    listApplyElement.insertAdjacentHTML('afterbegin', html);
+                    var newFreelancerId = $('#create-user').val();
+                    var newJobName = $('#job-name').val();
+                    var freelancerApplyName = `${res.lastName} ${res.firstName}`;
+                    var newContent = `Freelancer ${freelancerApplyName} vừa ứng tuyển dự án "${newJobName}"`;
+
+                    $.ajax({
+                        url: '/Notification/CreateNotification',
+                        type: 'POST',
+                        data: {
+                            content: newContent,
+                            freelancerId: newFreelancerId
+                        },
+                        success: function (response) {
+                            connectionInJob.invoke("SendNotifyToUser", newFreelancerId, newContent).catch(function (err) {//SendMessageToUser
+                                console.log("gửi notify thành công");
+                            });
+                            console.log('gửi notify thành công');
+                        },
+                        error: function (xhr, status, error) {
+                            showError('Hãy đăng nhập');
+                        }
+                    });
+                },
+                error: function (err) {
+                    var errors = err.responseJSON.errors;
+                    if (errors) {
+                        var error = errors[0];
+                        var messages = error.errors;
+                        if (messages.length > 1) {
+                            showError(messages[1]);
+                        } else {
+                            showError(messages[0]);
+                        }
+                    } else {
+                        showError('Đã xảy ra lỗi không xác định.');
+                    }
+                }
+            });
+        });
+
+        $('.delete-apply').on('click', function (event) {
+            event.preventDefault(); // Ngăn hành động mặc định
+
+            var applyId = $(this).data('apply');
+           
+
+            $.ajax({
+                url: '/Apply/DeleteApply',
+                type: 'POST',
+                data: {
+                    id: applyId
+                },
+                success: function (response) {
+                    showSuccess('Xóa ứng tuyển thành công.');
+                    $(`#li-apply-${applyId}`).remove();
+                },
+                error: function (xhr, status, error) {
+                    showError('Hãy đăng nhập');
+                }
+            });
+        });
+
+
+    </script>
+}

@@ -1,0 +1,659 @@
+﻿@model FreelancerPlatform.Application.Dtos.Freelancer.FreelancerViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết freelancer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input id="potient-id" type="hidden" value="@Model.Id" />
+
+<div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+
+    <div style="display: flex;">
+
+        <div style="width: 75%; padding: 20px;" id="freelancer-list">
+            <div class="profile-header" style="display: flex; align-items: flex-start; margin-bottom: 20px;">
+                <div class="profile-info" style="flex-grow: 1;">
+                   
+                    <img src=@(Model.ImageUrl != null && Model.ImageUrl != "" ? $"/Image/{Model.ImageUrl}" : "/images/default-avatar.jpg") alt="Profile Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+                    <div class="profile-info" style="flex-grow: 1;">
+                        <div style="display: flex; align-items: center;">
+                            <h1 style="font-size: 24px; margin: 0; margin-right: 10px;">@Model.LastName @Model.FirstName</h1>
+                            @{
+                                if (Model.Point > 0)
+                                {
+                                    <div style="display: flex; align-items: center;">
+                                        @{
+                                            for (var s = 1; s <= (int)Model.Point; s++)
+                                            {
+                                                <span style="color: gold; font-size: 18px;">⭐</span>
+                                            }
+                                        }
+                                        <span style="font-size: 18px; margin-left: 5px;">(@Model.Point)</span>
+                                        <span style="font-size: 18px; margin-left: 5px;">@Model.ReviewQuanlity <i class="fa fa-pen"></i></span>
+                                        <span style="font-size: 18px; margin-left: 5px;">| @Model.ContractQuanlity  <i class="fa fa-file"></i></span>
+                                        <span style="font-size: 18px; margin-left: 5px;">| @Model.Point <i class="fa fa-star"></i></span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <p class="job-title" style="font-size: 18px; color: gray; margin: 5px 0;">@string.Join(" - ", Model.Categories.Select(x => x.Name))</p>
+                        <p class="bio" style="font-size: 16px; line-height: 1.5;">@Html.Raw(Model.About)</p>
+                   
+
+
+                        <div class="freelancer-info" style="margin-top: 10px;">
+                            <p style="font-size: 16px; margin: 5px 0;"><strong>Mã người dùng:</strong> @Model.Id</p>
+                            <p style="font-size: 16px; margin: 5px 0;">
+                                <span><strong>Mức lương một giờ:</strong> @Model.RateHour?.ToString("N0")đ</span>
+                            </p>
+                            <p style="font-size: 16px; margin: 5px 0;"><strong>Số đánh giá:</strong> @Model.ReviewQuanlity</p>
+                            <p style="font-size: 16px; margin: 5px 0;"><strong>Thu nhập:</strong> 200.000đ</p>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <div class="icons" style="margin-left: auto; display: flex; align-items: flex-start; padding-top: 5px;">
+                    @{
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="icons" style="margin-left: auto; display: flex; align-items: center;">
+                                <div id="container-btn-potient-detail">
+                                    @if (ViewBag.PotientOfFreelancer.Contains(Model.Id))
+                                    {
+                                        <button style="background: none; border: none; cursor: pointer;" title="Đã thêm yêu thích" class="gallery-icon remove-potient-detail">
+                                            <i class="fa fa-heart" style="font-size: 24px; color: red; margin: 0 10px;"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient-detail">
+                                            <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                        </button>
+                                    }
+                                </div>
+
+                                <button id="btn-contact" style="background: none; border: none; cursor: pointer;" title="Liên hệ">
+                                    <i class="fa fa-envelope" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                </button>
+
+                                <button style="background: none; border: none; cursor: pointer;" title="Mời ứng tuyển" id="invite-button">
+                                    <i class="fa fa-paper-plane" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                </button>
+
+                                <div id="invite-popup" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000; border-radius: 10px; width: 350px;">
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <div style="font-weight: bold;">Chọn dự án mời</div>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <select id="job-offer-select" style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; white-space: normal;">
+                                                @{
+                                                    foreach (var i in ViewBag.JobOfFreelancer)
+                                                    {
+                                                        <option style="white-space: normal; overflow-wrap: break-word; display: block; max-width: 300px;" value="@i.Id">@i.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <button id="invite-submit" style="background-color: #0078D4; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">Mời</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <button style="background: none; border: none; cursor: pointer;" title="Báo cáo" id="report-button">
+                                    <i class="fa fa-flag" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                </button>
+
+                                <div id="report-popup" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000; border-radius: 10px; width: 350px;">
+                                    <h3>Báo cáo</h3>
+                                    <textarea id="report-content" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;" placeholder="Nhập nội dung báo cáo..."></textarea>
+                                    <button id="report-submit" style="background-color: #0078D4; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">Gửi báo cáo</button>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.getElementById('invite-button').addEventListener('click', function () {
+                                    var popup = document.getElementById('invite-popup');
+                                    var inviteButton = document.getElementById('invite-button');
+                                    var buttonRect = inviteButton.getBoundingClientRect();
+
+                                    // Position the invite popup below the invite button
+                                    popup.style.left = buttonRect.left + 'px';
+                                    popup.style.top = (buttonRect.bottom + window.scrollY + 5) + 'px'; // 5px below the button
+                                    popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
+                                });
+
+                                document.getElementById('report-button').addEventListener('click', function () {
+                                    var reportPopup = document.getElementById('report-popup');
+                                    var reportButton = document.getElementById('report-button');
+                                    var buttonRect = reportButton.getBoundingClientRect();
+
+                                    // Position the report popup below the report button
+                                    reportPopup.style.left = buttonRect.left + 'px';
+                                    reportPopup.style.top = (buttonRect.bottom + window.scrollY + 5) + 'px'; // 5px below the button
+                                    reportPopup.style.display = (reportPopup.style.display === 'none' || reportPopup.style.display === '') ? 'block' : 'none';
+                                });
+
+                                document.addEventListener('click', function (event) {
+                                    var reportPopup = document.getElementById('report-popup');
+                                    var invitePopup = document.getElementById('invite-popup');
+                                    var inviteButton = document.getElementById('invite-button');
+                                    var reportButton = document.getElementById('report-button');
+
+                                    if (!reportPopup.contains(event.target) && !reportButton.contains(event.target)) {
+                                        reportPopup.style.display = 'none'; // Hide report popup
+                                    }
+
+                                    if (!invitePopup.contains(event.target) && !inviteButton.contains(event.target)) {
+                                        invitePopup.style.display = 'none'; // Hide invite popup
+                                    }
+                                });
+                                
+                            </script>
+
+
+
+                        }
+                    }
+                </div>
+            </div>
+            <div class="skills-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng</h2>
+                @{
+                    if (Model.Skills.Count > 0)
+                    {
+                        <ul class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                            @{
+                                foreach (var i in Model.Skills)
+                                {
+                                    <li style="margin: 5px;">
+                                        <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px;">@i.Name</span>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Chưa có kỹ năng</p>
+                    }
+                }
+
+            </div>
+            <div class="experience-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Kinh nghiệm</h2>
+                @{
+                    if (Model.Experience!= null)
+                    {
+                        <p>@Html.Raw(Model.Experience)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin kinh nghiệm</p>
+                    }
+                }
+
+            </div>
+            <div class="education-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Học vấn</h2>
+                @{
+                    if (Model.Education != null)
+                    {
+                        <p>@Html.Raw(Model.Education)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin học vấn</p>
+                    }
+                }
+
+            </div>
+            <div class="certification-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Chứng chỉ</h2>
+                @{
+                    if (Model.Certification != null)
+                    {
+                        <p>@Html.Raw(Model.Certification)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin chứng chỉ</p>
+                    }
+                }
+
+            </div>
+            <div class="archive-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Thành tựu</h2>
+                @{
+                    if (Model.Archive != null)
+                    {
+                        <p>@Html.Raw(Model.Archive)</p>
+                    }
+                    else
+                    {
+                        <p>Chưa có thông tin thành tựu</p>
+                    }
+                }
+
+            </div>
+            <hr />
+            <div class="reviews-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá</h2>
+                @{
+                    if (ViewBag.ReviewOfFreelancer.Count > 0)
+                    {
+                        <ul class="reviews-list" style="list-style-type: none; padding: 0;">
+                            @{
+                                foreach(var r in ViewBag.ReviewOfFreelancer)
+                                {
+                                    <li class="review-item" style="margin-bottom: 20px;">
+                                        <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                            <img src=@(r.ImageUrl != null && r.ImageUrl != "" ? $"/Image/{r.ImageUrl}" : "/images/default-avatar.jpg") alt="Reviewer Avatar" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                                            <div class="review-info">
+                                                <h3 class="review-username" style="font-size: 18px; margin: 0;">@r.LastName @r.FirstName</h3>
+                                                <p class="review-date" style="font-size: 14px; color: gray;">@r.CreateDay.ToString("dd/MM/yyyy")</p>
+                                                <div class="review-rating" style="color: gold; font-size: 18px;">
+                                                    @{
+                                                        for(var s =1; s<=(int)r.Point; s++)
+                                                        {
+                                                            <span>⭐</span>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="review-content" style="font-size: 16px; line-height: 1.5;">@r.Review</p>
+                                    </li>
+                                    <hr style="border: 0; border-top: 1px solid #ddd;">
+                                }
+                            }
+                           
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Chưa có đánh giá</p>
+                    }
+                }
+            </div>
+        </div>
+
+
+      
+        <div style="width: 30%; padding: 20px; border-left: 1px solid #ddd;">
+
+            <div class="authentication-info" style="margin-bottom: 20px; margin-top: 30px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                <h2 style="font-size: 22px; margin-bottom: 10px;">Thông tin xác thực</h2>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (Model.PaymentVerification == true)
+                            {
+                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                <strong><i class="fas fa-credit-card" style="color: green"></i> Tài khoản ngân hàng:</strong>
+
+                                <span style="color: green;">Đã xác thực</span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                <strong><i class="fas fa-credit-card"></i> Tài khoản ngân hàng:</strong>
+
+                                <span style="color: black;">Chưa xác thực</span>
+                            }
+                        }
+                    </li>
+                    <li style="margin: 5px 0;">
+                        @{
+                            if (Model.About == null || Model.Categories.Count == 0 || Model.Skills.Count == 0)
+                            {
+                                <i class="fa fa-check-circle" style="color: black;"></i>
+                                <strong><i class="fas fa-user"></i> Thông tin hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle" style="color: green;"></i>
+                                <strong><i class="fas fa-user" style="color: green"></i> Thông tin hồ sơ:</strong> <span style="color: green;">Đã xác thực</span>
+                            }
+                        }
+                    </li>
+                    <li style="margin: 5px 0;">
+                        <i class="fa fa-check-circle" style="color: green;"></i>
+                        <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+                    </li>
+                </ul>
+            </div>
+
+
+            @{
+                if (ViewBag.FreelancerRecommendation.Count > 0)
+                {
+                    <div class="authentication-info" style="margin-bottom: 20px; margin-left: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                        <h2 style="font-size: 22px; margin-bottom: 10px;">Freelancer gợi ý</h2>
+                        <ul style="list-style-type: none; padding: 0;">
+                            @{
+                                foreach (var i in ViewBag.FreelancerRecommendation)
+                                {
+                                    <li style="margin: 5px 0;">
+                                        <a href="~/chi-tiet-du-an/@i.Id">
+                                            <i class="fa fa-circle" style="color: #0078D4;"></i>
+                                            <span>@i.LastName @i.FirstName</span>
+                                        </a>
+                                    </li>
+                                }
+                            }
+
+                        </ul>
+                    </div>
+                }
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 
+
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <div class="profile-header" style="display: flex; align-items: center; margin-bottom: 20px;">
+        <img src=(Model.ImageUrl != null && Model.ImageUrl != "" ? $"/Image/{Model.ImageUrl}" : "/images/default-avatar.jpg") alt="Profile Avatar" class="avatar" style="width: 120px; height: 120px; border-radius: 50%; margin-right: 20px;">
+        <div class="profile-info" style="flex-grow: 1;">
+            <h1 style="font-size: 24px; margin: 0;">Model.LastName Model.FirstName</h1>
+            <p class="job-title" style="font-size: 18px; color: gray; margin: 5px 0;">string.Join(" - ", Model.Categories.Select(x => x.Name))</p>
+            <p class="bio" style="font-size: 16px; line-height: 1.5;">Model.About</p>
+
+<div class="freelancer-info" style="margin-top: 10px;">
+    <p style="font-size: 16px; margin: 5px 0;">
+        <span><strong>Mức lương một giờ:</strong> Model.RateHour</span>
+        <span style="color: gold;">⭐⭐⭐⭐⭐</span> (5.0)
+    </p>
+    <p style="font-size: 16px; margin: 5px 0;"><strong>Số đánh giá:</strong> 150</p>
+    <p style="font-size: 16px; margin: 5px 0;"><strong>Thu nhập:</strong> 200.000đ</p>
+</div>
+        </div>
+
+    {
+        if (User.Identity.IsAuthenticated)
+        {
+        <div class="icons" style="margin-left: auto; display: flex; align-items: center;">
+            <div id="container-btn-potient-detail">
+                    if (ViewBag.PotientOfFreelancer.Contains(Model.Id))
+                    {
+                    <button style="background: none; border: none; cursor: pointer;" title="Đã thêm yêu thích" class="gallery-icon remove-potient-detail">
+                        <i class="fa fa-heart" style="font-size: 24px; color: red; margin: 0 10px;"></i>
+                    </button>
+                    }
+                    else
+                    {
+                    <button style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient-detail">
+                        <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                    </button>
+                    }
+            </div>
+
+            <button id="btn-contact" style="background: none; border: none; cursor: pointer;" title="Liên hệ">
+                <i class="fa fa-envelope" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+            </button>
+            <button style="background: none; border: none; cursor: pointer;" title="Mời ứng tuyển" id="invite-button">
+                <i class="fa fa-paper-plane" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+            </button>
+
+            <div id="invite-popup" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000; border-radius: 10px; width: 350px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="job-offer-select" style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                            {
+                                foreach (var i in ViewBag.JobOfFreelancer)
+                                {
+                                <option value="i.Id">i.Name</option>
+                                }
+                            }
+                    </select>
+                    <button id="invite-submit" style="background-color: #0078D4; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">Mời</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('invite-button').addEventListener('click', function () {
+                var popup = document.getElementById('invite-popup');
+                if (popup.style.display === 'none' || popup.style.display === '') {
+                    popup.style.display = 'block'; // Hiển thị popup
+                } else {
+                    popup.style.display = 'none';  // Ẩn popup
+                }
+            });
+
+            // Ẩn popup khi nhấn vào bên ngoài
+            document.addEventListener('click', function (event) {
+                var popup = document.getElementById('invite-popup');
+                var inviteButton = document.getElementById('invite-button');
+                if (!popup.contains(event.target) && !inviteButton.contains(event.target)) {
+                    popup.style.display = 'none'; // Ẩn popup
+                }
+            });
+        </script>
+        }
+    }
+
+    </div>
+
+
+
+<div class="authentication-info" style="margin-bottom: 20px;">
+    <h2 style="font-size: 22px; margin-bottom: 10px;">Thông tin xác thực</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        <li style="margin: 5px 0;">
+            {
+                if (Model.PaymentVerification == true)
+                {
+                    <i class="fa fa-check-circle" style="color: green;"></i>
+                    <strong><i class="fas fa-credit-card" style="color: green"></i> Tài khoản ngân hàng:</strong>
+
+                    <span style="color: green;">Đã xác thực</span>
+                }
+                else
+                {
+                    <i class="fa fa-check-circle" style="color: black;"></i>
+                    <strong><i class="fas fa-credit-card"></i> Tài khoản ngân hàng:</strong>
+
+                    <span style="color: black;">Chưa xác thực</span>
+                }
+            }
+        </li>
+        <li style="margin: 5px 0;">
+            {
+                if (Model.About == null || Model.Categories.Count == 0 || Model.Skills.Count == 0)
+                {
+                    <i class="fa fa-check-circle" style="color: black;"></i>
+                    <strong><i class="fas fa-user"></i> Thông tin hồ sơ:</strong> <span style="color: black;">Chưa xác thực</span>
+                }
+                else
+                {
+                    <i class="fa fa-check-circle" style="color: green;"></i>
+                    <strong><i class="fas fa-user" style="color: green"></i> Thông tin hồ sơ:</strong> <span style="color: green;">Đã xác thực</span>
+                }
+            }
+        </li>
+        <li style="margin: 5px 0;">
+            <i class="fa fa-check-circle" style="color: green;"></i>
+            <strong><i class="fas fa-envelope" style="color: green"></i> Email:</strong> <span style="color: green;">Đã xác thực</span>
+        </li>
+    </ul>
+</div>
+
+<div class="skills-section" style="margin-bottom: 20px;">
+    <h2 style="font-size: 22px; margin-bottom: 10px;">Kỹ năng</h2>
+    {
+        if (Model.Skills.Count > 0)
+        {
+            <ul class="skills-list" style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap;">
+                {
+                    foreach (var i in Model.Skills)
+                    {
+                        <li style="margin: 5px;">
+                            <span style="background-color: #0078D4; color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 16px;">i.Name</span>
+                        </li>
+                    }
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Chưa có kỹ năng</p>
+        }
+    }
+
+</div>
+
+<div class="reviews-section" style="margin-bottom: 20px;">
+    <h2 style="font-size: 22px; margin-bottom: 10px;">Đánh giá</h2>
+    <ul class="reviews-list" style="list-style-type: none; padding: 0;">
+        <li class="review-item" style="margin-bottom: 20px;">
+            <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                <img src="/images/default-avatar.jpg" alt="Reviewer Avatar" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                <div class="review-info">
+                    <h3 class="review-username" style="font-size: 18px; margin: 0;">Alice Smith</h3>
+                    <p class="review-date" style="font-size: 14px; color: gray;">28/09/2024</p>
+                    <div class="review-rating" style="color: gold; font-size: 18px;">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+            <p class="review-content" style="font-size: 16px; line-height: 1.5;">Great work! The project was delivered on time and exceeded my expectations. Will definitely hire again!</p>
+        </li>
+        <hr style="border: 0; border-top: 1px solid #ddd;">
+        <li class="review-item">
+            <div class="review-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                <img src="/images/default-avatar.jpg" alt="Reviewer Avatar" class="review-avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                <div class="review-info">
+                    <h3 class="review-username" style="font-size: 18px; margin: 0;">Bob Johnson</h3>
+                    <p class="review-date" style="font-size: 14px; color: gray;">28/10/2024</p>
+                    <div class="review-rating" style="color: gold; font-size: 18px;">⭐⭐⭐⭐</div>
+                </div>
+            </div>
+            <p class="review-content" style="font-size: 16px; line-height: 1.5;">Good developer, but communication could be improved. The final result was great, though!</p>
+        </li>
+    </ul>
+</div>
+
+<div class="hire-section" style="text-align: center; margin-bottom: 20px;">
+    <button class="hire-btn" style="background-color: #0078D4; color: white; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Thuê ngay</button>
+</div>
+</div>
+
+-->
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            // Gán sự kiện cho nút thêm yêu thích
+            $(document).on('click', '.add-potient-detail', function () {
+                var id = $('#potient-id').val();
+               
+                $.ajax({
+                    url: '/Freelancer/AddFreelancerPotient',
+                    type: 'POST',
+                    data: {
+                        freelancerPotientId: id
+                    },
+                    success: function (response) {
+                        showSuccess('Thêm yêu thích thành công.');
+                        var container = document.getElementById('container-btn-potient-detail');
+                        container.innerHTML = `
+                                    <button style="background: none; border: none; cursor: pointer;" title="Đã thêm yêu thích" class="gallery-icon remove-potient-detail">
+                                        <i class="fa fa-heart" style="font-size: 24px; color: red; margin: 0 10px;"></i>
+                                    </button>`;
+                    },
+                    error: function (xhr, status, error) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+
+            // Gán sự kiện cho nút xóa yêu thích
+            $(document).on('click', '.remove-potient-detail', function () {
+                var id = $('#potient-id').val();
+
+                $.ajax({
+                    url: '/Freelancer/MinusFreelancerPotient',
+                    type: 'POST',
+                    data: {
+                        freelancerPotientId: id
+                    },
+                    success: function (response) {
+                        showSuccess('Xóa yêu thích thành công.');
+                        var container = document.getElementById('container-btn-potient-detail');
+                        container.innerHTML = `
+                                    <button style="background: none; border: none; cursor: pointer;" title="Thêm yêu thích" class="gallery-icon add-potient-detail">
+                                        <i class="fa fa-heart" style="font-size: 24px; color: #0078D4; margin: 0 10px;"></i>
+                                    </button>`;
+                    },
+                    error: function (err) {
+                        showError('Hãy đăng nhập');
+                    }
+                });
+            });
+
+            $(document).on('click', '#invite-submit', function () {
+                var newFreelancerOfferId = $('#potient-id').val();
+                var newJobId = $('#job-offer-select').val();
+
+                $.ajax({
+                    url: '/Job/AddOfferJob',
+                    type: 'POST',
+                    data: {
+                        freelancerOfferId: newFreelancerOfferId,
+                        jobId: newJobId
+                    },
+                    success: function (response) {
+                        showSuccess('Mời thành công.');
+                        var container = document.getElementById('container-btn-potient-detail');
+                       
+                    },
+                    error: function (err) {
+                        showError('Lỗi trong quá trình xử lý');
+                    }
+                });
+            });
+
+            $(document).on('click', '#btn-contact', function () {
+                var freelancerId = $('#potient-id').val();
+                window.location.replace(`/tin-nhan?freelancerB=${freelancerId}`);
+                
+            });
+
+            $(document).on('click', '#report-submit', function () {
+                var reportContent = $('#report-content').val();
+               
+                var newFreelancerId = $('#potient-id').val();
+                $.ajax({
+                    url: '/Report/CreateReport',
+                    type: 'POST',
+                    data: {
+                        content: reportContent,
+                        freelancerId: newFreelancerId
+                    },
+                    success: function (res) {
+                        showSuccess("Báo cáo thành công");
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

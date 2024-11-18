@@ -1,0 +1,139 @@
+﻿@model FreelancerPlatform.Application.Dtos.Contract.ContractCreateRequest
+
+@{
+    ViewData["Title"] = "Tạo hợp đồng";
+}
+
+<input id="create-user" value="@ViewBag.CreateUser" type="hidden" />
+<input id="partner" value="@ViewBag.Partner" type="hidden" />
+<input id="create-user-name" value="@ViewBag.CreateUserFullName" type="hidden" />
+
+
+<div style="max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center;">Tạo Hợp Đồng</h2>
+
+    <form>
+        <label for="contract-title" style="font-weight: bold;">Dự án</label>
+        <select id="project-id" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+            <option value="0">-- Chọn dự án --</option>
+            @{
+                foreach (var i in ViewBag.JobOfUser)
+                {
+                        <option value="@i.Id">@i.Name</option>
+                }
+            }
+        </select>
+        <label for="contract-title" style="font-weight: bold;">Tên hợp đồng</label>
+        <input placeholder="Nhập tên hợp đồng" type="text" id="contract-name" name="contract-title" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <label for="contract-content" style="font-weight: bold;">Nội dung hợp đồng</label>
+        <textarea id="contract-content" name="contract-content" rows="5" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+
+        <label for="party-a-name" style="font-weight: bold;">Nguời thuê</label>
+        <input readonly value="@ViewBag.CreateUserFullName" type="text" id="contract-create-user" name="party-a-name" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <label for="party-b-name" style="font-weight: bold;">Người làm việc</label>
+        <input readonly value="@ViewBag.PartnerFullName" type="text" id="contract-party" name="party-b-name" style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px;">
+
+        <button id="btn-create-contract" type="submit" style="background-color: #0078D4; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; display: block; margin: auto;">Tạo Hợp Đồng</button>
+    </form>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+            const connectionInContract = new signalR.HubConnectionBuilder()
+                .withUrl("/chathub")
+                .build();
+            connectionInContract.start().catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            $('body').on('click', '#btn-create-contract', function (e) {
+                e.preventDefault();
+                const newPartner = $('#partner').val();
+                const newCreateUser = $('#create-user').val();
+                const newName = $('#contract-name').val();
+                const newContent = $('#contract-content').val();
+                const newProjectId = $('#project-id').val();
+
+                const newCreateUserName = $('#create-user-name').val();
+                var contentNotify = `Người thuê ${newCreateUserName} vừa tạo hợp đồng làm việc với bạn`;
+                console.log(newPartner);
+                console.log(newCreateUser);
+                console.log(newName);
+                console.log(newContent);
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Contract/CreateContract',
+                    data: {
+                        createUser: newCreateUser,
+                        partner: newPartner,
+                        content: newContent,
+                        name: newName,
+                        jobId: newProjectId
+                    },
+                    success: function (res) {
+                        showSuccess("Tạo hợp đồng thành công");
+                        $.ajax({
+                            url: '/Notification/CreateNotification',
+                            type: 'POST',
+                            data: {
+                                content: contentNotify,
+                                freelancerId: newPartner
+                            },
+                            success: function (response) {
+                                connectionInContract.invoke("SendNotifyToUser", newPartner, contentNotify).catch(function (err) {//SendMessageToUser
+                                    console.log("gửi notify thành công");
+                                });
+                                console.log('gửi notify thành công');
+                            },
+                            error: function (xhr, status, error) {
+                                showError('Hãy đăng nhập');
+                            }
+                        });
+                        window.location.replace('/nguoi-thue');
+                       
+                    },
+                    error: function (err) {
+                        var errors = err.responseJSON.errors;
+                        if (errors) {
+                            var error = errors[0];
+                            var messages = error.errors;
+                            if (messages.length > 1) {
+                                showError(messages[1]);
+                            } else {
+                                showError(messages[0]);
+                            }
+                        } else {
+                            showError('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            });
+
+            $('body').on('change', '#project-id', function (e) {
+                e.preventDefault();
+                const newProjectId = $('#project-id').val();
+
+                if (newProjectId != 0) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Contract/GetContenContract',
+                        data: {
+                            projectId: newProjectId,
+                        },
+                        success: function (res) {
+
+                            $('#contract-name').val(res);
+                        },
+                        error: function (err) {
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

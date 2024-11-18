@@ -1,0 +1,817 @@
+﻿@using FreelancerPlatform.Application.Extendsions
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+   
+    <meta charset="utf-8">
+   
+
+    <title>@ViewData["title"]</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Construction Html5 Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name=author content="Themefisher">
+    <meta name=generator content="Themefisher Constra HTML Template v1.0">
+
+    <!-- Favicon
+    ================================================== -->
+    <link rel="icon" type="image/png" href="/images/logo.jpg">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/plugins/bootstrap/bootstrap.min.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="/plugins/fontawesome/css/all.min.css">
+    <!-- Animation -->
+    <link rel="stylesheet" href="/plugins/animate-css/animate.css">
+    <!-- slick Carousel -->
+    <link rel="stylesheet" href="/plugins/slick/slick.css">
+    <link rel="stylesheet" href="/plugins/slick/slick-theme.css">
+    <!-- Colorbox -->
+    <link rel="stylesheet" href="/plugins/colorbox/colorbox.css">
+    <!-- Template styles-->
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="/css/notification.css" rel="stylesheet">
+    <script src="/ckeditor/ckeditor.js"></script>
+  
+    <link href="/ckeditor/skins/moono-lisa/editor.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="body-inner">
+        <!-- Header start -->
+        <header id="header" class="header-one">
+            <div class="bg-white">
+                <div class="container">
+                    <div class="logo-area">
+                        <div class="row align-items-center">
+                            <div class="logo col-lg-3 text-center text-lg-left mb-3 mb-md-5 mb-lg-0">
+                                <a class="d-block" href="index.html">
+                                    <img loading="lazy" src="/images/MainLogo.jpg" alt="Constra">
+                                </a>
+                            </div><!-- logo end -->
+
+                            <div class="col-lg-9 header-right">
+                                <ul class="top-info-box">
+                                    <li>
+                                        <div class="info-box">
+                                            <div class="info-box-content">
+                                                <p class="info-box-title">Liên hệ chúng tôi</p>
+                                                <p class="info-box-subtitle">(+84) 334190027</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    @{
+                                        if (User.Identity.IsAuthenticated)
+                                        {
+                                                    <li>
+                                                        <div class="info-box">
+                                                            <div class="info-box-content" style="text-align: center;">
+                                                                <p class="info-box-title">Thông báo</p>
+                                                                <div class="info-box-subtitle" style="position: relative; display: inline-block;">
+                                                                    <button id="notificationButton" style="border: none; background: none; cursor: pointer; padding: 0;">
+                                                                        <i class="fas fa-bell" style="color: #333; font-size: 25px;"></i>
+                                                                    </button>
+                                                                    <span id="container-quanlity-notify">
+                                                                        @await Component.InvokeAsync("NotifyQuanlity")
+                                                                    </span>
+
+                                                                    <!-- Dropdown notification list -->
+                                                                    <div id="container-list-notify">
+                                                                        @await Component.InvokeAsync("NotifyList")
+                                                                    </div>
+
+
+                                                                    <script>
+                                                                        var isOpen = false; // Track the open/close state of the dropdown
+
+                                                                        // Toggle the display of the notification list when clicking the bell icon
+                                                                        document.getElementById("notificationButton").addEventListener("click", function (event) {
+                                                                            event.preventDefault(); // Ngăn hành động mặc định của nút (nếu có)
+                                                                            var notificationList = document.getElementById("notificationList");
+
+                                                                            // Toggle the state: show if hidden, hide if shown
+                                                                            isOpen = !isOpen;
+                                                                            notificationList.style.display = isOpen ? "block" : "none"; // Hiển thị hoặc ẩn danh sách thông báo
+                                                                            if (isOpen) {
+                                                                                $.ajax({
+                                                                                    url: '/Notification/UpdateSeenStatus',
+                                                                                    type: 'POST',
+                                                                                    success: function (response) {
+                                                                                        var containerQuanlityNotify = document.getElementById('container-quanlity-notify');
+                                                                                        containerQuanlityNotify.innerHTML = ``;
+                                                                                        // $('#chat-count').text(response);
+                                                                                    },
+                                                                                    error: function (xhr, status, error) {
+                                                                                        console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    </script>
+                                                                </div>
+                                                            </div>
+
+
+
+
+
+
+                                                        </div>
+                                                    </li>
+                                        }
+                                    }
+                                    @{
+                                        if (!User.Identity.IsAuthenticated)
+                                        {
+                                                                    <li class="header-get-a-quote">
+                                                                        <a class="btn btn-primary" href="~/dang-nhap">Đăng nhập</a>
+                                                                        <a class="btn btn-primary" href="~/dang-ky">Đăng ký</a>
+                                                                    </li>
+                                        }
+                                        else
+                                        {
+                                                                    <li class="header-get-a-quote dropdown" style="position: relative;">
+                                                                        <a class="btn btn-primary" href="#" style="display: flex; align-items: center;">
+                                                                            <img src="/images/default-avatar.jpg" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                                                                            <span>
+                                                                                @User.GetFirstName()
+                                                                                <br />
+                                                                                200,000đ
+                                                                            </span>
+                                                                            <i class="fa fa-angle-down" style="margin-left: 10px;"></i>
+                                                                        </a>
+
+                                                                        <ul class="dropdown-menu" role="menu" style="position: absolute; top: 100%; display: none; background-color: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); padding: 0; list-style: none; border-radius: 4px; min-width: 150px;">
+                                                                            <div style="padding: 10px 20px;">
+                                                                                <a href="~/ho-so" style="color: black; text-decoration: none;">Hồ sơ</a>
+                                                                            </div>
+                                                                            <div style="padding: 10px 20px;">
+                                                                                <a href="~/chinh-ho-so" style="color: black; text-decoration: none;">Cập nhật hồ sơ</a>
+                                                                            </div>
+                                                                            <div style="padding: 10px 20px;">
+                                                                                <a href="~/chinh-thong-tin-thanh-toan" style="color: black; text-decoration: none;">Cập nhật thông tin thanh toán</a>
+                                                                            </div>
+                                                                            <div style="border-bottom: 1px solid #ddd; padding: 10px 20px;">
+                                                                                <a href="~/chinh-mat-khau" style="color: black; text-decoration: none;">Cập nhật mật khẩu</a>
+                                                                            </div>
+
+                                                                            <div style="padding: 10px 20px;">
+                                                                                <a href="~/dang-xuat" style="color: black; text-decoration: none;">Đăng xuất</a>
+                                                                            </div>
+                                                                        </ul>
+                                                                    </li>
+
+                                                                    <script>
+                                                                        document.querySelector('.header-get-a-quote').addEventListener('mouseenter', function () {
+                                                                            this.querySelector('.dropdown-menu').style.display = 'block';
+                                                                        });
+
+                                                                        document.querySelector('.header-get-a-quote').addEventListener('mouseleave', function () {
+                                                                            this.querySelector('.dropdown-menu').style.display = 'none';
+                                                                        });
+                                                                    </script>
+
+
+                                        }
+                                    }
+                                </ul><!-- Ul end -->
+                            </div><!-- header right end -->
+                        </div><!-- logo area end -->
+
+                    </div><!-- Row end -->
+                </div><!-- Container end -->
+            </div>
+
+            <div class="site-navigation">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <nav class="navbar navbar-expand-lg navbar-dark p-0">
+                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+
+                                <div id="navbar-collapse" class="collapse navbar-collapse">
+                                    <ul class="nav navbar-nav mr-auto">
+                                        <li class="nav-item dropdown  @RenderSection("homeActive",false)">
+                                            <a href="~/" class="nav-link dropdown-toggle">Trang chủ</a>
+                                        </li>
+
+                                        <li class="nav-item dropdown @RenderSection("freelancerActive",false)">
+                                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Tìm Freelancer <i class="fa fa-angle-down"></i></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="~/freelancer">Tìm tất cả</a></li>
+                                                <li><a href="#" id="skill-dropdown-toggle">Tìm qua kỹ năng</a></li>
+                                                <li><a href="#" id="category-dropdown-toggle">Tìm qua lĩnh vực hoạt động</a></li>
+                                            </ul>
+                                        </li>
+
+                                        <!--
+
+                                        <div id="skills-list" style="display: none; position: absolute; background: white; border: 1px solid #ccc; z-index: 1000; padding: 10px; width: 550px;">
+                                            <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start;">
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> Kỹ năng 1</span>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> Kỹ năng 1</span>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> Kỹ năng 1</span>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> Kỹ năng 1</span>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> Kỹ năng 1</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        -->
+                                        <div id="skills-list" style="display: none; position: absolute; background: white; border: 1px solid #ccc; z-index: 1000; padding: 10px; width: 550px;">
+                                            @await Component.InvokeAsync("Skill")
+                                        </div>
+
+
+                                        <div id="categories-list" style="display: none; position: absolute; background: white; border: 1px solid #ccc; z-index: 1000; padding: 10px; width: 550px;">
+
+                                            @await Component.InvokeAsync("Category")
+                                            
+                                            <!--
+                                                <ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start;">
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <img src="/images/default-avatar.jpg" alt="Kỹ năng 1" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                                                    <p>Kỹ năng 1</p>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <img src="/images/default-avatar.jpg" alt="Kỹ năng 2" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                                                    <p>Kỹ năng 2</p>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <img src="/images/default-avatar.jpg" alt="Kỹ năng 3" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                                                    <p>Kỹ năng 3</p>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <img src="/images/default-avatar.jpg" alt="Kỹ năng 4" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                                                    <p>Kỹ năng 4</p>
+                                                </li>
+                                                <li style="flex: 0 0 23%; margin: 5px; text-align: center;">
+                                                    <img src="/images/default-avatar.jpg" alt="Kỹ năng 5" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 5px;">
+                                                    <p>Kỹ năng 5</p>
+                                                </li>
+                                            </ul>
+                                            -->
+                                        </div>
+
+
+                                        <li class="nav-item dropdown  @RenderSection("projectActive",false)">
+                                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Tìm dự án <i class="fa fa-angle-down"></i></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="~/tim-du-an">Tìm tất cả </a></li>
+                                                <li><a href="projects-single.html" id="skill-serach-job-dropdown-toggle">Tìm qua kỹ năng </a></li>
+                                                <li><a href="projects-single.html" id="category-search-job-dropdown-toggle">Tìm qua lĩnh vực </a></li>
+                                                <li><a href="projects-single.html" id="job-type-search-job-dropdown-toggle">Tìm qua loại hình công việc </a></li>
+                                                <li><a href="projects-single.html">Tìm qua hình thức trả luơng </a></li>
+                                            </ul>
+                                        </li>
+                                        <div id="skills-list-search-job" style="display: none; position: absolute; background: white; border: 1px solid #ccc; z-index: 1000; padding: 10px; width: 550px;">
+                                            @await Component.InvokeAsync("SkillSearchJob")
+                                        </div>
+                                        <div id="categories-list-search-job" style="display: none; position: absolute; background: white; border: 1px solid #ccc; z-index: 1000; padding: 10px; width: 550px;">
+
+                                            @await Component.InvokeAsync("CategorySearchJob")
+                                        </div>
+
+                                        @{
+                                            if (User.Identity.IsAuthenticated)
+                                            {
+                                                                        <li class="nav-item dropdown @RenderSection("employerActive", false)">
+                                                                            <a href="~/nguoi-thue" class="nav-link">Người thuê</a>
+                                                                        </li>
+                                                                        <li class="nav-item dropdown @RenderSection("inforOfFreelancerActive", false)">
+                                                                            <a href="~/thong-tin-cua-freelancer" class="nav-link">Freelancer</a>
+                                                                        </li>
+                                                                        <li class="nav-item dropdown @RenderSection("inboxActive",false)">
+                                                                            <a href="~/tin-nhan" class="nav-link dropdown-toggle">
+                                                                                Tin nhắn
+                                                                               <span id="container-chat-count">
+                                                                    @await Component.InvokeAsync("ChatCountUnSeen")
+                                                                               </span>
+
+                                                                            </a>
+                                                                        </li>
+                                                                        <li class="nav-item dropdown @RenderSection("transactionActive",false)">
+                                                                            <a href="~/cong-dong" class="nav-link dropdown-toggle">Cộng đồng </a>
+
+                                                                        </li>
+                                                                        <li class="nav-item dropdown">
+                                                                    
+
+                                                                        </li>
+                                                                        <li class="nav-item dropdown">
+                                                                            <div data-animation-in="slideInLeft">
+                                                                                <a href="~/dang-du-an" class="slider btn btn-primary">Đăng dự án</a>
+                                                                               
+                                                                            </div>
+                                                                            <!--
+                                                                    <a href="#" style="margin-top: 12px; width: 10rem; height: 3rem; line-height: 3rem;" class="btn btn-primary">Đăng dự án</a>
+                                                                            -->
+                                                                        </li>
+                                            }
+                                        }
+
+
+                                        
+                                    </ul>
+                                </div>
+                            </nav>
+                           
+                        </div>
+                        <!--/ Col end -->
+                    </div>
+                    <!--/ Row end -->
+
+                    <div class="nav-search">
+                        <span id="search"><i class="fa fa-search"></i></span>
+                    </div><!-- Search end -->
+
+                    <div class="search-block" style="display: none;">
+                        <label for="search-field" class="w-100 mb-0">
+                            <input type="text" class="form-control" id="search-keyword-unauthen-input" placeholder="Nhập tên bạn muốn tìm">
+                        </label>
+                        <span class="search-close">&times;</span>
+
+                        <!-- Dropdown -->
+                        <select id="search-keyword-unauthen-select" class="form-control">
+                            <option value="1">Freelancer</option>
+                            <option value="2">Dự án</option>
+                        </select>
+
+                        <!-- Search Button with Icon -->
+                        <button id="search-keyword-unauthen-button" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+        <script src="/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+        <script src="/plugins/jQuery/jquery.min.js"></script>
+        <!-- Bootstrap jQuery -->
+        <script src="/plugins/bootstrap/bootstrap.min.js" defer></script>
+        <!-- Slick Carousel -->
+        <script src="/plugins/slick/slick.min.js"></script>
+        <script src="/plugins/slick/slick-animation.min.js"></script>
+        <!-- Color box -->
+        <script src="/plugins/colorbox/jquery.colorbox.js"></script>
+        <!-- shuffle -->
+        <script src="/plugins/shuffle/shuffle.min.js" defer></script>
+
+
+        <!-- Google Map API Key-->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcABaamniA6OL5YvYSpB3pFMNrXwXnLwU" defer></script>
+        <!-- Google Map Plugin-->
+        <script src="/plugins/google-map/map.js" defer></script>
+
+        <!-- Template custom -->
+        <script src="/js/script.js"></script>
+        <script src="/js/notification.js"></script>
+        <script src="/js/formatMoney.js"></script>
+        
+        
+        @RenderBody()
+
+        <footer id="footer" class="footer bg-overlay">
+            <div class="footer-main">
+                <div class="container">
+                    <div class="row justify-content-between">
+                        <div class="col-lg-4 col-md-6 footer-widget footer-about">
+                            <h3 class="widget-title">Về Freelance Platform</h3>
+                            <img loading="lazy" width="200px" class="footer-logo" src="/images/MainLogo.jpg" alt="Constra">
+                            <p>
+                                Chúng tôi cung cấp cho bạn một nền tền giúp kết nối nhà tuyển dụng và người làm việc tự do với nhau một cách dễ dàng, cung cấp các chức năng cho bạn làm việc hiệu quả.
+                            </p>
+                           
+                        </div><!-- Col end -->
+
+                        <div class="col-lg-4 col-md-6 footer-widget mt-5 mt-md-0">
+                            <h3 class="widget-title">Hoạt động</h3>
+                            <div class="working-hours">
+                              Đội ngũ Admin hoạt động liên tục hỗ trợ bạn khi gặp bất cứ khó khăn khi trải nghiệm dịch vụ
+                            </div>
+                        </div><!-- Col end -->
+
+                        <div class="col-lg-3 col-md-6 mt-5 mt-lg-0 footer-widget">
+                            <h3 class="widget-title">Dịch vụ</h3>
+                            <ul class="list-arrow">
+                                <li><a href="service-single.html">Tìm kiếm Freelancer và người thuê</a></li>
+                                <li><a href="service-single.html">Quản lý dự án</a></li>
+                                <li><a href="service-single.html">Quản lý ứng tuyển</a></li>
+                                <li><a href="service-single.html">Nhắn tin</a></li>
+                                <li><a href="service-single.html">Quản lý hợp đồng</a></li>
+                                <li><a href="service-single.html"></a>Quản lý thanh toán giao dịch</li>
+                            </ul>
+                        </div><!-- Col end -->
+                    </div><!-- Row end -->
+                </div><!-- Container end -->
+            </div><!-- Footer main end -->
+
+            <div class="copyright">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="copyright-info">
+                                <span>
+                                    Copyright &copy; <script>
+                                                         document.write(new Date().getFullYear())
+                                    </script>, Developed by KhanhHuynhCtu
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="footer-menu text-center text-md-right">
+                                <!-- 
+                                
+                                <ul class="list-unstyled">
+                                    <li><a href="about.html">About</a></li>
+                                    <li><a href="team.html">Our people</a></li>
+                                    <li><a href="faq.html">Faq</a></li>
+                                    <li><a href="news-left-sidebar.html">Blog</a></li>
+                                    <li><a href="pricing.html">Pricing</a></li>
+                                </ul>
+                                -->
+                            </div>
+                        </div>
+                    </div><!-- Row end -->
+
+                    <div id="back-to-top" data-spy="affix" data-offset-top="10" class="back-to-top position-fixed">
+                        <button class="btn btn-primary" title="Back to Top">
+                            <i class="fa fa-angle-double-up"></i>
+                        </button>
+                    </div>
+
+                </div><!-- Container end -->
+            </div><!-- Copyright end -->
+        </footer><!-- Footer end -->
+        <!-- Javascript Files
+        ================================================== -->
+        <!-- initialize jQuery Library -->
+        <!-- 
+        
+        <script src="/plugins/jQuery/jquery.min.js"></script>
+       
+        <script src="/plugins/bootstrap/bootstrap.min.js" defer></script>
+        <script src="/plugins/slick/slick.min.js"></script>
+        <script src="/plugins/slick/slick-animation.min.js"></script>
+        <script src="/plugins/colorbox/jquery.colorbox.js"></script>
+        <script src="/plugins/shuffle/shuffle.min.js" defer></script>
+
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcABaamniA6OL5YvYSpB3pFMNrXwXnLwU" defer></script>
+        <script src="/plugins/google-map/map.js" defer></script>
+
+        <script src="/js/script.js"></script>
+        <script src="/js/notification.js"></script>
+        <script src="/js/formatMoney.js"></script>
+        
+        -->
+        
+        <script>
+
+            /*$(document).ready(function () {
+                $('#skill-dropdown-toggle').hover(
+                    function () {
+                        // Hiển thị danh sách kỹ năng khi chuột di vào
+                        $('#skills-list').css({
+                            display: 'block',
+                            top: $(this).offset().top - 120, // Xuất hiện bên dưới "Tìm qua kỹ năng"
+                            left: $(this).offset().left - 70 // Nằm ngay bên trái
+                        });
+                    },
+                    function () {
+                        // Ẩn danh sách kỹ năng khi chuột ra ngoài
+                        $('#skills-list').hide();
+                    }
+                );
+
+                // Ngăn chặn ẩn khi di chuột vào danh sách kỹ năng
+                $('#skills-list').hover(
+                    function () {
+                        $(this).show();
+                    },
+                    function () {
+                        $(this).hide();
+                    }
+                );
+            });*/
+
+            function formatDate(dateString) {
+                var date = new Date(dateString);
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                var hours = String(date.getHours()).padStart(2, '0');
+                var minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            }
+
+
+            $(document).ready(function () {
+
+                const connection1 = new signalR.HubConnectionBuilder()
+                    .withUrl("/chathub")
+                    .build();
+
+                connection1.on("ReceiveChatCount", function (senderName) {
+                    //alert(senderName);
+
+                    $.ajax({
+                        url: '/Inbox/CheckChatCountUnSeen',
+                        type: 'POST',
+                        data: {
+                            id: senderName
+                        },
+                        success: function (response) {
+                            console.log('Lượng tin nhắn chưa đọc');
+                            console.log(response);
+
+                            // Thay đổi nội dung text của #chat-count
+                            if (response > 0) {
+                                var containerChatCount = document.getElementById('container-chat-count');
+                                containerChatCount.innerHTML = `
+                                                                           <span id="chat-count" style="background-color: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-block; text-align: center; font-size: 12px; line-height: 20px; position: relative; top: -10px; left: 5px;">
+                                                                                        ${response}
+                                                                           </span>`;
+                            }
+                            else {
+                                var containerChatCount = document.getElementById('container-chat-count');
+                                containerChatCount.innerHTML = ``;
+                            }
+                           // $('#chat-count').text(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                        }
+                    });
+
+                });
+
+                connection1.on("ReceiveNotify", function (content, timestamp) {
+                   
+
+                    $.ajax({
+                        url: '/Notification/CheckSeenStatus',
+                        type: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                            if (response > 0) {
+                                var containerQuanlityNotify = document.getElementById('container-quanlity-notify');
+                                containerQuanlityNotify.innerHTML = `
+                                                            <span style="position: absolute; top: -10px; right: -10px; background-color: red; color: white; border-radius: 50%; padding: 3px 7px; font-size: 9px; font-weight: bold; display: inline-block; line-height: 1;">
+                                                                            ${response}
+                                                            </span>`;
+                            }
+                            else {
+                                var containerQuanlityNotify = document.getElementById('container-quanlity-notify');
+                                containerQuanlityNotify.innerHTML = ``;
+                            }
+                            // $('#chat-count').text(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                        }
+                    });
+
+                    $.ajax({
+                        url: '/Notification/LoadListNotify',
+                        type: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                            if (response.length > 0) {
+
+                                var notificationHTML = '';
+
+                                $.each(response, function (index, notification) {
+                                    notificationHTML += `
+                                    <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                                        <span style="font-size: 12px; color: #777;">${formatDate(notification.createDay)}</span><br>
+                                        <p style="margin: 0;">${notification.content}</p>
+                                    </div>
+                                `;
+                                });
+
+                                var html = ' <div id="notificationList" style="display: none; position: absolute; top: 30px; left: 100%; background: white; border: 1px solid #ccc; border-radius: 5px; max-height: 700px; overflow-y: auto; z-index: 100; width: 400px; text-align: left;">';
+
+                                html += notificationHTML;
+                                html += '</div>';
+                                var containerListNotify = document.getElementById('container-list-notify');
+                                containerListNotify.innerHTML = html;
+                                console.log(html);
+                            }
+                            else {
+                                var containerListNotify = document.getElementById('container-list-notify');
+                                containerListNotify.innerHTML = '';
+                            }
+                            // $('#chat-count').text(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Lỗi hệ thống khi gửi tin, vui lòng thử lại!');
+                        }
+                    });
+
+                });
+
+
+                connection1.start().catch(function (err) {
+                    return console.error(err.toString());
+                });
+                // Hiển thị danh sách kỹ năng khi di chuột vào "Tìm qua kỹ năng"
+                $('#skill-dropdown-toggle').hover(
+                    function () {
+                        // Hiển thị danh sách kỹ năng
+                        $('#skills-list').css({
+                            display: 'block',
+                            top: $(this).offset().top - 130, // Xuất hiện bên dưới "Tìm qua kỹ năng"
+                            left: $(this).offset().left - 120 // Nằm ngay bên trái
+                        });
+                        // Hiển thị dropdown
+                        $(this).closest('.dropdown').addClass('show');
+                        $(this).closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        // Ẩn danh sách kỹ năng khi chuột ra ngoài
+                        if (!$('#skills-list:hover').length) { // Nếu không rê chuột vào danh sách kỹ năng
+                            $('#skills-list').hide();
+                            $(this).closest('.dropdown').removeClass('show');
+                            $(this).closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                        }
+                    }
+                );
+
+                // Hiển thị danh sách kỹ năng khi di chuột vào danh sách kỹ năng
+                $('#skills-list').hover(
+                    function () {
+                        $(this).show(); // Giữ cho danh sách kỹ năng hiển thị khi di chuột vào
+                        $('#skill-dropdown-toggle').closest('.dropdown').addClass('show');
+                        $('#skill-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        $(this).hide(); // Ẩn danh sách kỹ năng khi chuột rời khỏi
+                        $('#skill-dropdown-toggle').closest('.dropdown').removeClass('show');
+                        $('#skill-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                    }
+                );
+
+
+
+
+                $('#skill-serach-job-dropdown-toggle').hover(
+                    function () {
+                        // Hiển thị danh sách kỹ năng
+                        $('#skills-list-search-job').css({
+                            display: 'block',
+                            top: $(this).offset().top - 130, // Xuất hiện bên dưới "Tìm qua kỹ năng"
+                            left: $(this).offset().left - 120 // Nằm ngay bên trái
+                        });
+                        // Hiển thị dropdown
+                        $(this).closest('.dropdown').addClass('show');
+                        $(this).closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        // Ẩn danh sách kỹ năng khi chuột ra ngoài
+                        if (!$('#skills-list-search-job:hover').length) { // Nếu không rê chuột vào danh sách kỹ năng
+                            $('#skills-list-search-job').hide();
+                            $(this).closest('.dropdown').removeClass('show');
+                            $(this).closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                        }
+                    }
+                );
+
+                // Hiển thị danh sách kỹ năng khi di chuột vào danh sách kỹ năng
+                $('#skills-list-search-job').hover(
+                    function () {
+                        $(this).show(); // Giữ cho danh sách kỹ năng hiển thị khi di chuột vào
+                        $('#skill-search-job-dropdown-toggle').closest('.dropdown').addClass('show');
+                        $('#skill-search-job-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        $(this).hide(); // Ẩn danh sách kỹ năng khi chuột rời khỏi
+                        $('#skill-search-job-dropdown-toggle').closest('.dropdown').removeClass('show');
+                        $('#skill-search-job-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                    }
+                );
+
+
+
+                $('#category-dropdown-toggle').hover(
+                    function () {
+                        // Hiển thị danh sách kỹ năng
+                        $('#categories-list').css({
+                            display: 'block',
+                            top: $(this).offset().top - 130, // Xuất hiện bên dưới "Tìm qua kỹ năng"
+                            left: $(this).offset().left - 120 // Nằm ngay bên trái
+                        });
+                        // Hiển thị dropdown
+                        $(this).closest('.dropdown').addClass('show');
+                        $(this).closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        // Ẩn danh sách kỹ năng khi chuột ra ngoài
+                        if (!$('#categories-list:hover').length) { // Nếu không rê chuột vào danh sách kỹ năng
+                            $('#categories-list').hide();
+                            $(this).closest('.dropdown').removeClass('show');
+                            $(this).closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                        }
+                    }
+                );
+
+                // Hiển thị danh sách kỹ năng khi di chuột vào danh sách kỹ năng
+                $('#categories-list').hover(
+                    function () {
+                        $(this).show(); // Giữ cho danh sách kỹ năng hiển thị khi di chuột vào
+                        $('#category-dropdown-toggle').closest('.dropdown').addClass('show');
+                        $('#category-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        $(this).hide(); // Ẩn danh sách kỹ năng khi chuột rời khỏi
+                        $('#category-dropdown-toggle').closest('.dropdown').removeClass('show');
+                        $('#category-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                    }
+                );
+
+
+                $('#category-search-job-dropdown-toggle').hover(
+                    function () {
+                        // Hiển thị danh sách kỹ năng
+                        $('#categories-list-search-job').css({
+                            display: 'block',
+                            top: $(this).offset().top - 130, // Xuất hiện bên dưới "Tìm qua kỹ năng"
+                            left: $(this).offset().left - 120 // Nằm ngay bên trái
+                        });
+                        // Hiển thị dropdown
+                        $(this).closest('.dropdown').addClass('show');
+                        $(this).closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        // Ẩn danh sách kỹ năng khi chuột ra ngoài
+                        if (!$('#categories-list-search-job:hover').length) { // Nếu không rê chuột vào danh sách kỹ năng
+                            $('#categories-list-search-job').hide();
+                            $(this).closest('.dropdown').removeClass('show');
+                            $(this).closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                        }
+                    }
+                );
+
+                // Hiển thị danh sách kỹ năng khi di chuột vào danh sách kỹ năng
+                $('#categories-list-search-job').hover(
+                    function () {
+                        $(this).show(); // Giữ cho danh sách kỹ năng hiển thị khi di chuột vào
+                        $('#category-search-job-dropdown-toggle').closest('.dropdown').addClass('show');
+                        $('#category-search-job-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').addClass('show');
+                    },
+                    function () {
+                        $(this).hide(); // Ẩn danh sách kỹ năng khi chuột rời khỏi
+                        $('#category-search-job-dropdown-toggle').closest('.dropdown').removeClass('show');
+                        $('#category-search-job-dropdown-toggle').closest('.dropdown').find('.dropdown-menu').removeClass('show');
+                    }
+                );
+
+
+                $('#search-keyword-unauthen-button').on('click', function () {
+                    var value = $('#search-keyword-unauthen-input').val();
+
+                    var selectValue = $('#search-keyword-unauthen-select').val();
+                    //alert(selectValue);
+                    if (selectValue == 1) {
+                        window.location.replace(`/freelancer?keyword=${value}`);
+                    }
+                    else {
+                        window.location.replace('/du-an');
+                    }
+
+                });
+
+            });
+
+
+        </script>
+
+    </div><!-- Body inner end -->
+</body>
+
+</html>
+
+
+@RenderSection("script", false)

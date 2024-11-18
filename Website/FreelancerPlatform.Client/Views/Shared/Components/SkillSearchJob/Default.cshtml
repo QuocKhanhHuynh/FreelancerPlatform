@@ -1,0 +1,14 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Skill.SkillQuickViewModel>
+
+<ul style="list-style-type: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start;">
+    @{
+        foreach (var i in Model)
+        {
+            <a href="~/tim-du-an?skillId=@i.Id">
+            <li style="flex: 0 0 23%; margin: 5px; text-align: left;">
+                <span><i class="fa fa-arrow-right" style="color: #0078D4"></i> @i.Name</span>
+            </li>
+            </a>
+        }
+    }
+</ul>

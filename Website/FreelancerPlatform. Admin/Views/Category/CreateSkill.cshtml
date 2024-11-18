@@ -1,0 +1,63 @@
+﻿
+
+@{
+    ViewData["Title"] = "Thêm kỹ năng";
+}
+
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Thêm kỹ năng</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 style="margin: 0;">Thêm kỹ năng</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="skill-name" class="form-label">Tên kỹ năng</label>
+                <input type="text" id="skill-name" name="skill-name" class="form-control" placeholder="Nhập tên kỹ năng" />
+            </div>
+            <div class="mb-3">
+                <button type="submit" id="btn-create-skill" class="btn btn-primary">Tạo kỹ năng</button>
+                <a href="/ky-nang" class="btn btn-secondary">Quay lại</a> <!-- Thay đổi đường dẫn nếu cần -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '#btn-create-skill', function (e) {
+
+                 const newName = $('#skill-name').val();
+
+
+                 $.ajax({
+                     type: "POST",
+                     url: '/category/createskill',
+                     data: {
+                         name: newName
+                     },
+                     success: function (res) {
+                         window.location.replace('/ky-nang');
+                     },
+                     error: function (err) {
+                         var errors = err.responseJSON.errors;
+                         if (errors) {
+                             var error = errors[0];
+                             var messages = error.errors;
+                             if (messages.length > 1) {
+                                 showError(messages[1]);
+                             } else {
+                                 showError(messages[0]);
+                             }
+                         } else {
+                             showError('Đã xảy ra lỗi không xác định.');
+                         }
+                     }
+                 });
+             });
+         });
+    </script>
+}

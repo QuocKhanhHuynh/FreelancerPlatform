@@ -1,0 +1,68 @@
+﻿@model List< FreelancerPlatform.Application.Dtos.Report.ReportQuickViewModel>
+
+@{
+    ViewData["Title"] = "Báo cáo";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Báo cáo</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; justify-content: center; align-items: center;">
+            <h5 style="margin: 0;">Danh sách tài khoản</h5>
+            <div style="display: flex; align-items: center; margin: 0 auto;">
+                <input id="keyword-search" type="text" placeholder="Tìm kiếm tài khoản..." style="margin: 0 10px; padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+                <button id="btn-search" style="padding: 8px 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                    Tìm
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã tài khoản</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Tên tài khoản</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Thời gian báo cáo</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Số lần báo cáo</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr> 
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.LastName @i.FirstName</td>
+                            <td style="padding: 12px;">@i.DateCreate.ToString("dd/MM/yyyy")</td>
+                            <td style="padding: 12px;">@i.NumberReport</td>
+                            <td id="container-btn-lock-@i.Id" style="padding: 12px;">
+                                <button class="detail" data-report="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xem
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+        $('body').on('click', '.detail', function (e) {
+            e.preventDefault(); 
+
+            var newId = $(this).data("report");
+            window.location.replace(`/chi-tiet-bao-cao/${newId}`)
+        });
+
+        $('body').on('click', '#btn-search', function (e) { 
+            e.preventDefault(); 
+
+            var newkey = $('#keyword-search').val();
+            window.location.replace(`/bao-cao?keyword=${newkey}`)
+        });
+    </script>
+}

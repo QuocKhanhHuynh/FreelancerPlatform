@@ -1,0 +1,56 @@
+﻿@model List<FreelancerPlatform.Application.Dtos.Freelancer.PaymentConfirmViewModel>
+
+@{
+    ViewData["Title"] = "Xác minh thanh toán";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Xác thực thanh toán</h1>
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex;">
+            <h5 style="margin: 0;">Danh sách xác minh thanh toán</h5>
+            
+        </div>
+
+        <div class="card-body">
+            <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Mã tài khoản</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">tên tài khoản</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Ngày yêu cầu</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #ddd; background-color: #f2f2f2;">Hoạt động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr>
+                            <td style="padding: 12px;">@i.Id</td>
+                            <td style="padding: 12px;">@i.LastName @i.FirstName</td>
+                            <td style="padding: 12px;">@i.UpdateDay.ToString("dd/MM/yyy")</td>
+                            <td id="container-btn-lock-@i.Id" style="padding: 12px;">
+                                <button class="detail-payment" data-payment="@i.Id" style="padding: 5px 20px; width: 80px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    Xem
+                                </button>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section script {
+    <script>
+
+        $('body').on('click', '.detail-payment', function (e) { // Thay đổi ở đây
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (nếu có)
+
+            var newId = $(this).data("payment");
+            window.location.replace(`/chi-tiet-xac-thuc-thanh-toan/${newId}`)
+        });
+    </script>
+}
